@@ -40,8 +40,13 @@ Use this when writing or changing Laravel application code.
 - Use queues with retry limits and failed-job handling.
 - Keep job classes single-purpose and idempotent where possible.
 
+## Generated Files
+
+- Use `php artisan make:<type> --no-interaction` for all generated classes (models, requests, jobs, policies, migrations) instead of hand-writing boilerplate.
+- Tests must use disposable storage or a dedicated test database whose name contains `test`; never staging, production, or shared operational databases.
+
 ## Verification
 
 - Run `php artisan test --filter=<Name>` for affected code.
 - Run `php artisan route:list` and `php artisan about` after structural changes.
-- Run project linting (`pint`, `duster`, or equivalent).
+- Run project linting: `vendor/bin/pint --dirty` (or `duster`, or project equivalent).

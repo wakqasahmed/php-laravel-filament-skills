@@ -7,6 +7,20 @@ description: Follow Filament conventions when building resources, forms, tables,
 
 Use this when building or changing Filament admin panel code.
 
+## Detect the version first
+
+```bash
+composer show filament/filament | grep versions
+```
+
+v3 and v4 have different APIs — check before writing or copying code:
+
+- v4 unifies forms and infolists under `Filament\Schemas\Schema`; v3 uses `Filament\Forms\Form` and `Filament\Infolists\Infolist`.
+- Component namespaces, layout components, and many method signatures moved in v4.
+- Plugins are version-specific; a v3 plugin will not install on v4 (see `filament-plugin-first`).
+
+Match the project's installed major version. Never mix v3 and v4 snippets.
+
 ## Resource Structure
 
 - One resource per model, with a clear singular name.

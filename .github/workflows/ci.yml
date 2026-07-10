@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: List skills
+        run: scripts/list-skills.sh | grep -q "skills/filament/plugin-first/SKILL.md"
+      - name: Validate plugin paths
+        run: python3 scripts/validate-plugin.py

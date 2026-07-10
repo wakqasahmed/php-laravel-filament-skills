@@ -24,7 +24,7 @@ Before writing custom code for these areas, search the ecosystem:
 ## Search Order
 
 1. Filament official plugins: `filamentphp.com/plugins`
-2. Awesome Filament list: `github.com/filamentphp/awesome`
+2. Awesome Filament list: `github.com/spekulatius/awesome-filament`
 3. Packagist: `packagist.org` search `filamentphp`
 4. GitHub code search for `filamentphp` + feature keyword
 
