@@ -21,13 +21,15 @@ Use this when writing or reviewing PHP code in any project.
 - Do not DRY prematurely; similar code with different reasons to change should stay separate.
 - Shared logic belongs in a named class or trait with a clear responsibility, not copied inline.
 
-## SOLID
+## SOLID — applied as review smells
 
-- **S**ingle Responsibility: one reason to change per class.
-- **O**pen/Closed: extend behavior without modifying existing code.
-- **L**iskov Substitution: derived types must honor the base contract.
-- **I**nterface Segregation: small, role-specific interfaces beat large generic ones.
-- **D**ependency Inversion: depend on abstractions, inject concrete implementations.
+Flag these instead of reciting the principles:
+
+- A class name containing "Manager", "Helper", or "Service" doing three unrelated things → split by reason to change.
+- A growing `match`/`if` chain switching on type → extract an interface and move each branch into an implementation.
+- A subclass that throws on, no-ops, or narrows an inherited method → the hierarchy is wrong; prefer composition.
+- An interface forcing empty method implementations on consumers → split into role-specific interfaces.
+- A class calling `new` on collaborators it doesn't own, or reaching for a facade inside domain logic → inject the dependency.
 
 ## Dependency Hygiene
 
@@ -38,6 +40,7 @@ Use this when writing or reviewing PHP code in any project.
 
 ## Verification
 
-- Static analysis passes (`phpstan`, `psalm`, or project equivalent).
-- Tests cover new behavior and existing tests still pass.
+- Static analysis passes: `vendor/bin/phpstan analyse` (or `vendor/bin/psalm`), at the project's configured level.
+- Affected tests pass: `vendor/bin/pest --filter=<Name>` or `vendor/bin/phpunit --filter=<Name>`.
+- `composer audit` is clean after dependency changes.
 - No new warnings in CI.
