@@ -22,6 +22,13 @@ Use this when writing or changing Laravel application code.
 - Avoid N+1 queries; eager load relationships in resources and controllers.
 - Use database transactions when modifying multiple related records.
 
+## Foreign Keys And Migrations
+
+- Match the foreign key column's type exactly to the referenced table's primary key type (`foreignId` for `bigIncrements`/`id()`, not a mismatched `unsignedInteger`).
+- Set an explicit `onDelete`/`onUpdate` policy (`cascade`, `restrict`, `nullOnDelete`) — don't leave it at the database default.
+- Index every foreign key column and any column used in a frequent `WHERE`/`JOIN`/`ORDER BY`; verify with `php artisan schema:dump` or by reviewing the migration diff against the referenced table before merge.
+- Idempotent job handling on retry is covered in Background Work above — apply it to anything a migration or FK change feeds into a queue.
+
 ## Validation
 
 - Create a Form Request for every non-trivial store/update endpoint.
