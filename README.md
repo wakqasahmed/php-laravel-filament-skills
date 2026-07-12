@@ -15,6 +15,10 @@ Reusable technical skills for PHP engineering, Laravel conventions, and Filament
 npx skills@latest add wakqasahmed/php-laravel-filament-skills
 ```
 
+## Security
+
+Skills are markdown instruction files, not executable code — see [SECURITY.md](SECURITY.md) for what that means, how to report a concern, and known limitations.
+
 ## Scope
 
 This pack is intentionally narrow: it covers the PHP → Laravel → Filament stack. General engineering workflow guidance belongs in `ai-engineering-workflow-skills`.
