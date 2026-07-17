@@ -51,6 +51,10 @@ Then choose:
 - If building from scratch, keep the API surface narrow and match Filament conventions (resource classes, form schemas, table columns, action classes).
 - Record the plugin decision and alternatives considered in the PR description.
 
+## Plugin Authoring
+
+When a reusable plugin is justified, inspect the target Filament major version and two comparable plugins first. Keep the public API small, register components through Filament's plugin contract, publish only necessary config/assets, and test installation plus the primary integration path in a clean Laravel application.
+
 ## Verification
 
 - `composer show <vendor/package>` confirms installation.
