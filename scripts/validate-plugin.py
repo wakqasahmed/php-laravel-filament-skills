@@ -8,7 +8,11 @@ plugin = json.loads((root / ".claude-plugin" / "plugin.json").read_text())
 skills = plugin.get("skills", [])
 
 declared_skill_files = {root / skill / "SKILL.md" for skill in skills}
-discovered_skill_files = set((root / "skills").glob("**/SKILL.md"))
+discovered_skill_files = {
+    path
+    for path in (root / "skills").glob("**/SKILL.md")
+    if "node_modules" not in path.parts
+}
 
 undeclared = sorted(str(path.relative_to(root)) for path in discovered_skill_files - declared_skill_files)
 if undeclared:
@@ -22,11 +26,16 @@ mismatched = []
 for skill in skills:
     skill_md = root / skill / "SKILL.md"
     content = skill_md.read_text()
-    match = re.search(r"^name:\s*(\S+)\s*$", content, re.MULTILINE)
+    frontmatter = re.match(r"\A---\s*\n(.*?)\n---\s*(?:\n|\Z)", content, re.DOTALL)
+    if not frontmatter:
+        mismatched.append(f"{skill}: no YAML frontmatter found")
+        continue
+    fields = frontmatter.group(1)
+    match = re.search(r"^name:\s*(\S+)\s*$", fields, re.MULTILINE)
     if not match:
         mismatched.append(f"{skill}: no 'name:' frontmatter field found")
         continue
-    if not re.search(r"^description:\s*\S", content, re.MULTILINE):
+    if not re.search(r"^description:\s*\S", fields, re.MULTILINE):
         mismatched.append(f"{skill}: no 'description:' frontmatter field found")
         continue
     name = match.group(1).strip().strip("'\"")
