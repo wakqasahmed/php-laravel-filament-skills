@@ -2,6 +2,18 @@
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+
+if [[ -L "$DEST" ]]; then
+  resolved="$(readlink -f "$DEST")"
+  case "$resolved" in
+    "$REPO"|"$REPO"/*)
+      echo "error: $DEST is a symlink into this repo ($resolved)." >&2
+      echo "Remove it and rerun so per-skill links do not pollute the repo." >&2
+      exit 1
+      ;;
+  esac
+fi
+
 mkdir -p "$DEST"
 find "$REPO/skills" -name SKILL.md -print0 |
 while IFS= read -r -d '' skill_md; do
