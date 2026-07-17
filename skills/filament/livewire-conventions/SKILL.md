@@ -32,9 +32,10 @@ hook runs when:
 - `mount()` — runs once, only on the component's initial render (the first HTTP request that
   creates it). Use it to set up initial public property state from route params, models, or
   defaults. Never rely on `mount()` running again after an update — it won't.
-- `hydrate()` — runs on every subsequent request, before the property values are restored,
-  letting you react to the component being rebuilt. Rarely needed directly; Filament resources
-  use lifecycle interfaces (`HasForms`, `InteractsWithTable`) that hook in here for you.
+- `hydrate()` — runs on every subsequent request, after public property values are restored
+  from the snapshot, letting you react to the component being rebuilt. Rarely needed directly;
+  Filament resources use lifecycle interfaces (`HasForms`, `InteractsWithTable`) that hook in
+  here for you.
 - Action/update methods (`updatedFoo()`, action handlers) — run after a property changes via
   `wire:model` or after a called method, on the request that carries that interaction.
 - `dehydrate()` — runs at the end of every request, after render, to snapshot public property
@@ -53,8 +54,9 @@ bound with `wire:model` (or explicitly set from a listener) rather than assumed 
 `wire:model` triggers a full round trip to the server (network request, component rehydration,
 re-render, DOM diff/patch) on the configured event:
 
-- `wire:model.live` — fires on every `input` event, i.e. every keystroke. This is a real
-  performance problem on anything with meaningful per-keystroke cost: components with expensive
+- `wire:model.live` — updates on `input` events with Livewire's default 150ms debounce, so
+  rapid keystrokes are typically collapsed into one request after the pause. This can still be a
+  performance problem when the field has meaningful per-update cost: components with expensive
   `render()` queries, large tables, or components nested inside other stateful components that
   also re-render. Avoid it on free-text fields unless you specifically need live validation or a
   live-filtering UI and have confirmed the render cost is cheap.
@@ -122,7 +124,7 @@ Livewire context:
   `vendor/livewire/livewire` source or changelog if behavior seems off, since hook names and
   some binding modifiers have changed across major versions.
 - Manually reproduce the interaction in the browser and check the network tab: verify a
-  `wire:model.live` field is producing a request per keystroke, and confirm deferred fields only
-  send their value with the next real action.
+  `wire:model.live` field sends after its 150ms default debounce, and confirm deferred fields
+  only send their value with the next real action.
 - For nested/looped components, test add/remove/reorder operations and confirm each item's state
   stays attached to the correct record, not the render position.
