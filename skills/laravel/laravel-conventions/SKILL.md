@@ -9,11 +9,14 @@ Use this when writing or changing Laravel application code.
 
 ## Defaults
 
+- Inspect existing routes, models, config, tests, and installed Laravel version before choosing a pattern; match established project conventions where they are sound.
 - Eloquent over raw SQL unless the query is too complex for the ORM.
 - Form Request classes for all validation; never inline validate in controllers.
 - `config('key')` instead of `env('KEY')` outside config files.
 - Queue jobs (`ShouldQueue`) for anything slow, external, or async.
-- Service classes for business logic; keep controllers thin.
+- Keep controllers thin; introduce service classes only when the project's existing structure or real complexity warrants them.
+- Use named routes and route helpers for application links and redirects.
+- Check the installed Laravel major version before applying framework structure or API guidance; Laravel 10, 11, and 12 are not interchangeable.
 
 ## Models
 
@@ -44,6 +47,12 @@ Use this when writing or changing Laravel application code.
 - Keep rules declarative; extract reusable rules into custom Rule classes.
 - Authorize inside the request, not the controller.
 
+## APIs And Authentication
+
+- Use API Resources to shape public API responses; do not return models directly.
+- Authenticate first-party API clients with the project's configured guard; use Sanctum only when its token or SPA-cookie model fits the client.
+- Put authorization in policies and validate every request at the boundary.
+
 ## Configuration
 
 - Centralize environment access in config files.
@@ -55,11 +64,13 @@ Use this when writing or changing Laravel application code.
 - Dispatch jobs for external API calls, emails, exports, and heavy computations.
 - Use queues with retry limits and failed-job handling.
 - Keep job classes single-purpose and idempotent where possible.
+- Use Horizon for Redis queue visibility and control when it is installed; otherwise follow the project's queue monitoring setup.
 
 ## Generated Files
 
 - Use `php artisan make:<type> --no-interaction` for all generated classes (models, requests, jobs, policies, migrations) instead of hand-writing boilerplate.
 - Tests must use disposable storage or a dedicated test database whose name contains `test`; never staging, production, or shared operational databases.
+- Use model factories and focused feature tests for application behavior.
 
 ## Verification
 

@@ -10,6 +10,10 @@ Use this when writing or reviewing PHP code in any project.
 ## Defaults
 
 - Prefer typed properties, parameters, and return types.
+- Use braces for every control-flow block, even when it contains one statement.
+- Use constructor property promotion for clear injected dependencies; use enums for finite domain states.
+- Document complex array shapes and generic collections with PHPDoc when native types cannot express them.
+- Confirm the project's minimum PHP version before using a language feature; version-specific syntax is never a universal requirement.
 - Favor composition over inheritance.
 - Keep classes small and focused on one responsibility.
 - Avoid global state and static helpers that hide dependencies.
