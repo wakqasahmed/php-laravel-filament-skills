@@ -29,6 +29,15 @@ Use this when writing or changing Laravel application code.
 - Index every foreign key column and any column used in a frequent `WHERE`/`JOIN`/`ORDER BY`; verify with `php artisan schema:dump` or by reviewing the migration diff against the referenced table before merge.
 - Idempotent job handling on retry is covered in Background Work above — apply it to anything a migration or FK change feeds into a queue.
 
+## Production Migration Safety
+
+- Take a database backup immediately before running any migration that drops a column/table, renames a column, or transforms data in place. A destructive migration with no preceding backup is not deployable — document the backup step in the PR or deploy runbook, not just in your head.
+- `php artisan migrate` refuses to run against an environment where `app.env` is `production` unless you pass `--force`. Treat that prompt as a guardrail, not friction to script around — never bake `--force` into a deploy step that isn't gated by its own review/approval (CI job, deploy script) that a human or protected pipeline controls.
+- For any migration with meaningful table-lock time (adding an index or column to a large table, an unbounded `UPDATE` inside a migration) or any downtime-sensitive change, put the app in maintenance mode first: `php artisan down --secret=...` before, `php artisan up` after. Prefer `php artisan down --render="errors::503"` (or a custom view) over a bare 503, and confirm the app supports zero-downtime alternatives (online DDL tools, additive-then-backfill-then-cleanup migrations) before assuming `down` is required.
+- MySQL DDL (`ALTER TABLE`, `CREATE TABLE`, `DROP TABLE`) is not transactional — unlike PostgreSQL, a failed statement partway through a multi-statement migration can leave the schema partially applied, and Laravel's migration wrapping transaction will not roll back the already-committed DDL. Keep migrations small and single-purpose (one schema change per migration) so a failure is easy to diagnose and the blast radius is one operation, not five.
+- Test the migration's `down()` locally (`php artisan migrate:rollback`) before merging, not just `up()`. Do not ship a migration you can't cleanly reverse; if a migration is genuinely irreversible (e.g. it drops a column with data that isn't recoverable from the backup taken above), leave `down()` throwing `\RuntimeException` with a one-line explanation instead of a silent no-op, so a future rollback attempt fails loud instead of pretending to succeed.
+- Never let a migration silently truncate or drop data as a side effect of a schema change (e.g. changing a column type in a way that MySQL will truncate on conversion) without an explicit backup step called out in the PR description or deploy checklist.
+
 ## Validation
 
 - Create a Form Request for every non-trivial store/update endpoint.
