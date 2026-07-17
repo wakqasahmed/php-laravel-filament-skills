@@ -4,7 +4,9 @@
     "./skills/php/php-principles",
     "./skills/laravel/laravel-conventions",
     "./skills/laravel/laravel-testing",
+    "./skills/laravel/laravel-security",
     "./skills/filament/filament-plugin-first",
-    "./skills/filament/filament-conventions"
+    "./skills/filament/filament-conventions",
+    "./skills/filament/livewire-conventions"
   ]
 }
