@@ -6,6 +6,7 @@ Reusable technical guidance for PHP engineering, Laravel conventions, and Filame
 
 - Use `php-principles` when designing classes, refactoring logic, adding dependencies, or reviewing PHP code.
 - Use `laravel-conventions` when adding routes, controllers, models, validation, or background work in a Laravel project.
+- Use `laravel-testing` when writing or running tests, generating test data, or deciding feature-vs-unit boundaries in a Laravel project.
 - Use `filament-plugin-first` before building custom Filament components.
 - Use `filament-conventions` when adding or changing Filament resources, forms, tables, actions, or widgets.
 

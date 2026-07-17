@@ -6,6 +6,7 @@ Reusable technical skills for PHP engineering, Laravel conventions, and Filament
 
 - `php-principles` — core PHP engineering principles: DRY, SOLID, typing, dependency hygiene.
 - `laravel-conventions` — Laravel defaults for models, validation, config, queues, and controllers.
+- `laravel-testing` — Pest conventions, factory/seeder patterns, feature-vs-unit boundaries, and test-database safety.
 - `filament-plugin-first` — search the Filament plugin ecosystem before building custom components.
 - `filament-conventions` — Filament patterns for resources, forms, tables, actions, widgets, and multi-tenancy.
 
