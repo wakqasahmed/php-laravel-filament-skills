@@ -44,6 +44,18 @@ class ValidatePluginTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_rejects_skills_missing_from_plugin_manifest(self):
+        directory, root = self.create_plugin("---\nname: example\ndescription: Example skill\n---\n")
+        self.addCleanup(directory.cleanup)
+        undeclared_skill = root / "skills" / "undeclared" / "SKILL.md"
+        undeclared_skill.parent.mkdir(parents=True)
+        undeclared_skill.write_text("---\nname: undeclared\ndescription: Undeclared skill\n---\n")
+
+        result = self.validate(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Skills missing from plugin manifest: skills/undeclared/SKILL.md", result.stderr)
+
     def test_rejects_description_outside_frontmatter(self):
         directory, root = self.create_plugin("---\nname: example\n---\n\ndescription: Not frontmatter\n")
         self.addCleanup(directory.cleanup)
