@@ -8,6 +8,7 @@ Reusable technical skills for PHP engineering, Laravel conventions, and Filament
 - `laravel-conventions` — Laravel defaults for models, validation, config, queues, and controllers.
 - `filament-plugin-first` — search the Filament plugin ecosystem before building custom components.
 - `filament-conventions` — Filament patterns for resources, forms, tables, actions, widgets, and multi-tenancy.
+- `livewire-conventions` — Livewire component lifecycle, `wire:model` performance, and nested state pitfalls for custom Filament components.
 
 ## Install
 
