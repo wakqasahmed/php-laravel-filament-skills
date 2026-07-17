@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: List skills
-        run: scripts/list-skills.sh | grep -q "skills/filament/plugin-first/SKILL.md"
+        run: scripts/list-skills.sh | grep -q "skills/filament/filament-plugin-first/SKILL.md"
       - name: Validate plugin paths
         run: python3 scripts/validate-plugin.py

@@ -1,9 +1,9 @@
 {
   "name": "php-laravel-filament-skills",
   "skills": [
-    "./skills/php/principles",
-    "./skills/laravel/conventions",
-    "./skills/filament/plugin-first",
-    "./skills/filament/conventions"
+    "./skills/php/php-principles",
+    "./skills/laravel/laravel-conventions",
+    "./skills/filament/filament-plugin-first",
+    "./skills/filament/filament-conventions"
   ]
 }

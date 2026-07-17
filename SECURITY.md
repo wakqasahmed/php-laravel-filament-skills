@@ -14,9 +14,9 @@ For a report you'd prefer not to make public initially, use [GitHub's private vu
 
 ## Known limitations
 
-- `skills/php/principles/SKILL.md` instructs the agent to run `composer audit`.
-- `skills/laravel/conventions/SKILL.md` instructs the agent to run `php artisan test`, `php artisan route:list`, `php artisan about`, and `vendor/bin/pint` (or `duster`).
-- `skills/filament/conventions/SKILL.md` instructs the agent to run `composer show filament/filament | grep versions`, `php artisan serve`, and affected Pest/feature tests.
-- `skills/filament/plugin-first/SKILL.md` instructs the agent to search external sites (`filamentphp.com/plugins`, `github.com/spekulatius/awesome-filament`, `packagist.org`, GitHub code search) when evaluating plugins, and to run `composer show`, `composer why`, and `php artisan about`.
+- `skills/php/php-principles/SKILL.md` instructs the agent to run `composer audit`.
+- `skills/laravel/laravel-conventions/SKILL.md` instructs the agent to run `php artisan test`, `php artisan route:list`, `php artisan about`, and `vendor/bin/pint` (or `duster`).
+- `skills/filament/filament-conventions/SKILL.md` instructs the agent to run `composer show filament/filament | grep versions`, `php artisan serve`, and affected Pest/feature tests.
+- `skills/filament/filament-plugin-first/SKILL.md` instructs the agent to search external sites (`filamentphp.com/plugins`, `github.com/spekulatius/awesome-filament`, `packagist.org`, GitHub code search) when evaluating plugins, and to run `composer show`, `composer why`, and `php artisan about`.
 
 None of these commands are executed by this repo itself — they are recommendations for the agent to carry out under its own permission model, in the context of the project it's operating on.
