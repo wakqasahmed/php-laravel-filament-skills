@@ -1,0 +1,132 @@
+{
+  "cases": [
+    {
+      "id": "color-picker-single-good-candidate",
+      "split": "held_out",
+      "prompt": "A Filament 4 admin panel needs a color picker form field. Search results:\n```json\n[{\"name\":\"vendor/filament-color-picker\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/filament-color-picker",
+        "primary_reason": "best_compatible_maintained_licensed_free_option"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "excel-export-feature-gap",
+      "split": "held_out",
+      "prompt": "A Filament 4 table needs Excel export, not just CSV. Search results:\n```json\n[{\"name\":\"vendor/csv-only-export\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true},{\"name\":\"vendor/full-export\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/full-export",
+        "primary_reason": "best_compatible_maintained_licensed_free_option"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "chart-widget-needs-dark-mode-tweak",
+      "split": "held_out",
+      "prompt": "A Filament 4 dashboard needs a KPI chart widget with dark mode support. Search results:\n```json\n[{\"name\":\"vendor/chart-widget\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true,\"needs_adaptation\":\"missing dark mode palette\"}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "fork_adapt",
+        "chosen_candidate": "vendor/chart-widget",
+        "primary_reason": "close_match_needs_adaptation"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "multi-tenancy-version-mismatch",
+      "split": "held_out",
+      "prompt": "A Filament 4 project needs a multi-tenancy helper package. Search results:\n```json\n[{\"name\":\"vendor/tenancy-v3-only\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":false,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true},{\"name\":\"vendor/tenancy-v4\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [
+        "vendor/tenancy-v3-only"
+      ],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/tenancy-v4",
+        "primary_reason": "best_compatible_maintained_licensed_free_option"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "spatie-tags-integration-docs-gap",
+      "split": "held_out",
+      "prompt": "A Filament 4 resource needs a Spatie tags picker field. Search results:\n```json\n[{\"name\":\"vendor/tags-undocumented\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":false},{\"name\":\"vendor/tags-documented\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/tags-documented",
+        "primary_reason": "best_compatible_maintained_licensed_free_option"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "trivial-builtin-toggle-field",
+      "split": "held_out",
+      "prompt": "A Filament 4 form needs a single boolean toggle field for an 'is_active' column. No ecosystem search is warranted. State the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "build_from_scratch",
+        "chosen_candidate": null,
+        "primary_reason": "builtin_component_sufficient"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "trivial-builtin-text-column",
+      "split": "held_out",
+      "prompt": "A Filament 4 table needs a plain text column showing the customer's email address. No ecosystem search is warranted. State the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "build_from_scratch",
+        "chosen_candidate": null,
+        "primary_reason": "builtin_component_sufficient"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "abandoned-best-feature-reject",
+      "split": "held_out",
+      "prompt": "A Filament 4 admin needs an advanced import wizard. Search results:\n```json\n[{\"name\":\"vendor/import-wizard-abandoned\",\"license\":\"MIT\",\"maintained\":false,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true,\"last_release_years_ago\":3},{\"name\":\"vendor/import-basic-maintained\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [
+        "vendor/import-wizard-abandoned"
+      ],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/import-basic-maintained",
+        "primary_reason": "rejected_unmaintained_for_safe_alternative"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "incompatible-license-best-feature-reject",
+      "split": "held_out",
+      "prompt": "A permissively-licensed SaaS product needs a rich table filter package. Search results:\n```json\n[{\"name\":\"vendor/filter-gpl\",\"license\":\"AGPL-3.0\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true},{\"name\":\"vendor/filter-mit\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [
+        "vendor/filter-gpl"
+      ],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/filter-mit",
+        "primary_reason": "rejected_incompatible_license_for_safe_alternative"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "unapproved-paid-best-feature-reject",
+      "split": "held_out",
+      "prompt": "A cost-constrained internal tool needs a notification center widget, and no budget approval for paid add-ons exists yet. Search results:\n```json\n[{\"name\":\"vendor/notify-pro-paid\",\"license\":\"proprietary\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"paid\",\"feature_complete\":true,\"has_tests\":true,\"approved\":false},{\"name\":\"vendor/notify-free\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [
+        "vendor/notify-pro-paid"
+      ],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/notify-free",
+        "primary_reason": "rejected_unapproved_paid_for_free_alternative"
+      },
+      "category": "safety"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+name: Filament plugin-first outcome eval
+
+on:
+  pull_request:
+    paths:
+      - 'skills/filament/filament-plugin-first/**'
+      - '.github/workflows/filament-plugin-first-outcome-eval.yml'
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: Repository-controlled target-agent executable path
+        required: true
+        type: string
+      image:
+        description: Digest-pinned evaluator image
+        required: true
+        type: string
+      model:
+        description: Declared model identifier
+        required: true
+        type: string
+      trials:
+        description: Trials per case per condition (3-6)
+        required: false
+        type: string
+        default: '5'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run offline deterministic contract checks
+        run: bash eval/filament/filament-plugin-first/run-eval.sh --dry-run
+  outcome-harness:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run isolated enabled and disabled trials
+        run: >-
+          python3 eval/filament/filament-plugin-first/run_harness.py
+          --agent "${{ inputs.agent }}" --image "${{ inputs.image }}"
+          --model "${{ inputs.model }}" --trials "${{ inputs.trials }}"
+          --output filament-plugin-first-outcome-results.json
+      - name: Validate outcome delta and safety threshold
+        run: >-
+          python3 eval/filament/filament-plugin-first/validate-harness-results.py
+          --results filament-plugin-first-outcome-results.json --trials "${{ inputs.trials }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: filament-plugin-first-outcome-results
+          path: filament-plugin-first-outcome-results.json
+          retention-days: 90
