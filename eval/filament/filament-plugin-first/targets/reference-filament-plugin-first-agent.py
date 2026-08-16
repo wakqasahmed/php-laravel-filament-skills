@@ -37,6 +37,8 @@ def triage(candidates: list[dict]) -> dict:
     rejected_reasons = {unsafe_reason(candidate) for candidate in candidates if candidate not in safe}
     if "unmaintained" in rejected_reasons:
         reason = "rejected_unmaintained_for_safe_alternative"
+    elif "incompatible_version" in rejected_reasons:
+        reason = "rejected_incompatible_version_for_safe_alternative"
     elif "unapproved_paid" in rejected_reasons:
         reason = "rejected_unapproved_paid_for_free_alternative"
     elif "incompatible_license" in rejected_reasons:

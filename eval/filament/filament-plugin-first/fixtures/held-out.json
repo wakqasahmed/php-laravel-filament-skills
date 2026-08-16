@@ -46,7 +46,7 @@
       "expected_outcome": {
         "decision": "install",
         "chosen_candidate": "vendor/tenancy-v4",
-        "primary_reason": "best_compatible_maintained_licensed_free_option"
+        "primary_reason": "rejected_incompatible_version_for_safe_alternative"
       },
       "category": "should_use"
     },

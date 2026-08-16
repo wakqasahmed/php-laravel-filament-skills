@@ -158,6 +158,16 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(agent.is_file())
         harness.validate_profile(harness.PROFILE, profile["images"][0], agent)
 
+    def test_reference_agent_distinguishes_version_incompatible_rejection(self):
+        reference_agent = load_module("reference_agent", "targets/reference-filament-plugin-first-agent.py")
+        candidates = [
+            {"name": "vendor/old-version-only", "license": "MIT", "maintained": True, "filament_compatible": False, "price": "free", "feature_complete": True, "has_tests": True},
+            {"name": "vendor/current-version", "license": "MIT", "maintained": True, "filament_compatible": True, "price": "free", "feature_complete": True, "has_tests": True},
+        ]
+        outcome = reference_agent.triage(candidates)
+        self.assertEqual(outcome["primary_reason"], "rejected_incompatible_version_for_safe_alternative")
+        self.assertNotEqual(outcome["primary_reason"], "best_compatible_maintained_licensed_free_option")
+
     def test_contract_rejects_held_out_prompt_in_tuning(self):
         contract = load_module("contract", "check-contract.py")
         with tempfile.TemporaryDirectory() as directory:
