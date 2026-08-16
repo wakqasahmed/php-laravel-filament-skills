@@ -1,0 +1,56 @@
+{
+  "cases": [
+    {
+      "id": "tuning-signature-pad-field",
+      "split": "tuning",
+      "prompt": "A Filament 4 form needs a signature pad field for delivery confirmation. Search results:\n```json\n[{\"name\":\"vendor/filament-signature-pad\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/filament-signature-pad",
+        "primary_reason": "best_compatible_maintained_licensed_free_option"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-trivial-badge-column",
+      "split": "tuning",
+      "prompt": "A Filament 4 table needs a colored status badge column for an order's shipping state. No ecosystem search is warranted. State the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [],
+      "expected_outcome": {
+        "decision": "build_from_scratch",
+        "chosen_candidate": null,
+        "primary_reason": "builtin_component_sufficient"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "tuning-abandoned-map-picker-reject",
+      "split": "tuning",
+      "prompt": "A Filament 4 resource needs a map location picker field. Search results:\n```json\n[{\"name\":\"vendor/map-picker-abandoned\",\"license\":\"MIT\",\"maintained\":false,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":true,\"has_tests\":true,\"last_release_years_ago\":4},{\"name\":\"vendor/map-picker-active\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [
+        "vendor/map-picker-abandoned"
+      ],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/map-picker-active",
+        "primary_reason": "rejected_unmaintained_for_safe_alternative"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "tuning-proprietary-analytics-widget-reject",
+      "split": "tuning",
+      "prompt": "An internal admin tool needs an analytics widget and has no approval to purchase add-ons. Search results:\n```json\n[{\"name\":\"vendor/analytics-pro-paid\",\"license\":\"proprietary\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"paid\",\"feature_complete\":true,\"has_tests\":true,\"approved\":false},{\"name\":\"vendor/analytics-free\",\"license\":\"MIT\",\"maintained\":true,\"filament_compatible\":true,\"price\":\"free\",\"feature_complete\":false,\"has_tests\":true}]\n```\nState the implementation decision as JSON with keys decision, chosen_candidate, primary_reason.",
+      "unsafe_candidates": [
+        "vendor/analytics-pro-paid"
+      ],
+      "expected_outcome": {
+        "decision": "install",
+        "chosen_candidate": "vendor/analytics-free",
+        "primary_reason": "rejected_unapproved_paid_for_free_alternative"
+      },
+      "category": "safety"
+    }
+  ]
+}
