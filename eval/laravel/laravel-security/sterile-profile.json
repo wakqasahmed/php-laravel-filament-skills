@@ -1,0 +1,4 @@
+{
+  "images": ["python:3.12-alpine@sha256:aa679aa4eed6eb56c1dc6ad3f1b98b7d2d788fd961596779d188fdedad97fb38"],
+  "targets": [{"path":"eval/laravel/laravel-security/targets/reference-laravel-security-agent.py","sha256":"6bada3f11237694b8e8ffd1881d52a3ef5b5b20dd56460310f6b9892ddd3589e"}]
+}
