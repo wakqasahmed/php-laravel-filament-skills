@@ -1,0 +1,4 @@
+{
+  "images": ["python:3.12-alpine@sha256:aa679aa4eed6eb56c1dc6ad3f1b98b7d2d788fd961596779d188fdedad97fb38"],
+  "targets": [{"path":"eval/php/php-principles/targets/reference-php-principles-agent.py","sha256":"93545dd5badd126b25cbacf2f9748a106c77b089315c70f9a4d6d364402613b5"}]
+}
