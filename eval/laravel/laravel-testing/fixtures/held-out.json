@@ -1,0 +1,149 @@
+{
+  "cases": [
+    {
+      "id": "pest-functional-expect-syntax",
+      "split": "held_out",
+      "prompt": "A developer writes a new Pest test using raw $this->assertTrue($response->isOk()) and $this->assertEquals('John', $user->name). State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$this->assertTrue(",
+        "$this->assertEquals("
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_pest_expect_syntax",
+        "primary_reason": "prefer_pest_expect_assertions_for_readability"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "http-external-api-fake",
+      "split": "held_out",
+      "prompt": "A feature test for a weather widget executes real outbound HTTP requests to api.openweathermap.org during test execution. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "Http::get('https://api.openweathermap.org",
+        "real outbound HTTP requests"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_http_fake",
+        "primary_reason": "stub_outbound_http_calls_with_http_fake"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "refresh-database-trait",
+      "split": "held_out",
+      "prompt": "A suite of feature tests that insert users and orders into the database does not use any database cleanup trait, causing subsequent test assertions to fail due to lingering test records. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "without RefreshDatabase",
+        "$user->delete();"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_refresh_database_trait",
+        "primary_reason": "use_refresh_database_by_default_for_isolated_state"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "model-factories-over-raw-seeders",
+      "split": "held_out",
+      "prompt": "A unit test creates 50 test users by executing database/seeders/DatabaseSeeder.php instead of using User::factory()->count(50)->create(). State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$this->seed(DatabaseSeeder::class)",
+        "database/seeders/DatabaseSeeder.php"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_model_factories",
+        "primary_reason": "use_factories_for_per_test_fixtures_not_seeders"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "queue-mail-fake-dispatch",
+      "split": "held_out",
+      "prompt": "A user registration test triggers a real WelcomeEmailMailable via SMTP server instead of faking the mail service. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "Mail::to($user)->send(new WelcomeEmailMailable",
+        "real SMTP server"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_mail_fake",
+        "primary_reason": "fake_mail_dispatch_and_assert_sent"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "pure-unit-test-calculation-near-miss",
+      "split": "held_out",
+      "prompt": "A pure mathematical TaxCalculator class has 15 edge cases. The developer writes Pest unit tests without booting Laravel's HTTP kernel or connecting to the database. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [],
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "keep_isolated_unit_tests",
+        "primary_reason": "unit_tests_appropriate_for_pure_calculation_branching"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "reference-lookup-seeder-near-miss",
+      "split": "held_out",
+      "prompt": "A test suite runs RolesAndPermissionsSeeder once in test setup to populate static system roles before running authorization feature tests. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [],
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "allow_reference_table_seeding",
+        "primary_reason": "seeders_appropriate_for_static_lookup_and_permission_tables"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "test-database-pointing-to-production-backup",
+      "split": "held_out",
+      "prompt": "A developer configures phpunit.xml to set DB_DATABASE=app_production_snapshot so that test data looks realistic. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "DB_DATABASE=app_production_snapshot",
+        "production snapshot database",
+        "app_production_snapshot"
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "enforce_dedicated_test_database",
+        "primary_reason": "test_database_must_clearly_contain_test_or_use_sqlite_memory"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "live-payment-gateway-sandbox-in-feature-test",
+      "split": "held_out",
+      "prompt": "A checkout feature test submits live API requests to Stripe's sandbox server with test cards, causing tests to fail when the office internet drops. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "new StripeClient(config('services.stripe.secret'))",
+        "paymentIntents->create("
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "mock_payment_gateway_client",
+        "primary_reason": "never_let_unit_or_feature_tests_hit_live_network"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "manual-database-cleanup-without-transactions",
+      "split": "held_out",
+      "prompt": "A developer removes RefreshDatabase and replaces it with manual $user->delete() calls at the end of each test method. If an assertion fails midway, subsequent tests crash. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$user->delete();",
+        "without RefreshDatabase or DatabaseTransactions"
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_refresh_database_or_transactions",
+        "primary_reason": "never_rely_on_manual_cleanup_instead_of_transactions_or_refresh"
+      },
+      "category": "safety"
+    }
+  ]
+}
