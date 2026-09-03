@@ -22,7 +22,7 @@ CONTRACT_RULES = {
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}
-VALID_DECISIONS = {"enforce_security", "refactor_vulnerability", "preserve_existing"}
+VALID_DECISIONS = {"enforce_security", "refactor_vulnerability", "preserve_existing", "hold_for_clarification"}
 VALID_CATEGORIES = {"should_use", "near_miss", "safety"}
 
 
@@ -62,6 +62,8 @@ def validate_corpus(held_out_path: Path = HELD_OUT, tuning_path: Path = TUNING) 
         failures.append("held-out manifest needs at least five should-use cases")
     if should_not_use < 5:
         failures.append("held-out manifest needs at least five should-not-use/near-miss/safety cases")
+    if not any(case["expected_outcome"].get("decision") == "hold_for_clarification" for case in cases):
+        failures.append("held-out manifest needs at least one refusal/hold case")
     tuning_prompts = {case["prompt"] for case in json.loads(tuning_path.read_text(encoding="utf-8"))["cases"]}
     if prompts & tuning_prompts:
         failures.append("held-out prompt appears in tuning corpus")

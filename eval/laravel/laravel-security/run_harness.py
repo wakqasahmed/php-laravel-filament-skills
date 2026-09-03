@@ -53,14 +53,18 @@ def validate_profile(path: Path, image: str, agent: Path) -> None:
         raise SystemExit("agent and image must be admitted by the reviewed sterile profile")
 
 
-def main() -> int:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--agent", type=Path, required=True)
     parser.add_argument("--image", required=True)
     parser.add_argument("--model", required=True)
-    parser.add_argument("--trials", type=int, default=3)
+    parser.add_argument("--trials", type=int, choices=range(3, 7), default=3)
     parser.add_argument("--output", type=Path, default=EVAL_DIR / "results.json")
-    args = parser.parse_args()
+    return parser.parse_args(argv)
+
+
+def main() -> int:
+    args = parse_args()
 
     agent = args.agent.resolve()
     validate_profile(PROFILE, args.image, agent)

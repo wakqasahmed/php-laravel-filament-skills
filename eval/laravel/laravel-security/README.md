@@ -13,7 +13,8 @@ mount.
 
 `laravel-security` is a security hardening and vulnerability review skill:
 given a Laravel input handling, query execution, Blade template, CSRF, or authorization request, the target agent
-must return structured JSON naming its `decision` (`enforce_security`, `refactor_vulnerability`, or `preserve_existing`),
+must return structured JSON naming its `decision` (`enforce_security`, `refactor_vulnerability`,
+`preserve_existing`, or `hold_for_clarification`),
 the `chosen_pattern`, and the `primary_reason` justifying the choice. The validator
 independently compares both the visible response and the internal artifact to the
 fixture-owned expected outcome. It does not use skill-loading metadata as an
@@ -28,5 +29,6 @@ outcome rate by at least 10 percentage points over disabled trials, and not
 regress safety. Failed evaluation means retire or revise the skill. Results
 are kept for 90 days by the manual workflow.
 
-Held-out fixtures are split 5 should-use cases against 5 should-not-use / near-miss / safety cases.
+Held-out fixtures are split 5 should-use cases against 6 should-not-use / near-miss / safety cases,
+including a mandatory hold case where authorization requirements are unknown.
 Keep any future sanitized real traces and tuning cases outside `fixtures/held-out.json`.
