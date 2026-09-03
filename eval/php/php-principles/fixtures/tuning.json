@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": "tuning-constructor-promotion",
+      "split": "tuning",
+      "prompt": "Class repeats 5 constructor parameters and assigns 5 properties manually. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "verbose_manual_property_assignment"
+      ],
+      "expected_outcome": {
+        "decision": "apply_principle",
+        "chosen_pattern": "use_constructor_property_promotion",
+        "primary_reason": "use_constructor_promotion_for_clear_dependencies"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-missing-control-braces",
+      "split": "tuning",
+      "prompt": "Single-line if statement without braces. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "omitted_control_braces"
+      ],
+      "expected_outcome": {
+        "decision": "apply_principle",
+        "chosen_pattern": "use_braces_for_control_blocks",
+        "primary_reason": "use_braces_for_every_control_flow_block"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-phpdoc-generics",
+      "split": "tuning",
+      "prompt": "Method returns untyped array of Order objects. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "untyped_array_collection"
+      ],
+      "expected_outcome": {
+        "decision": "apply_principle",
+        "chosen_pattern": "document_array_shape_with_phpdoc",
+        "primary_reason": "document_generic_collections_with_phpdoc"
+      },
+      "category": "should_use"
+    }
+  ]
+}
