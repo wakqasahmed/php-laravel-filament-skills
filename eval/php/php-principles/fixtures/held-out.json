@@ -5,8 +5,8 @@
       "split": "held_out",
       "prompt": "A class named UserManager handles user password hashing, parses uploaded CSV files, and sends marketing emails via raw cURL calls. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "god_class_with_multiple_responsibilities",
-        "unsplit_manager_smell"
+        "class UserManager",
+        "curl_exec("
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
@@ -20,8 +20,8 @@
       "split": "held_out",
       "prompt": "A NotificationSender class contains a 10-branch match($type) statement to format and dispatch notifications for Email, SMS, Slack, Webhook, and Push. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "growing_match_on_type",
-        "procedural_type_switching"
+        "match($type)",
+        "match ($type) {"
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
@@ -35,8 +35,8 @@
       "split": "held_out",
       "prompt": "An OrderPricingEngine instantiates new StripeApiClient() and new CurrencyConverter() directly inside its compute() method. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "hardcoded_new_on_collaborators",
-        "hidden_collaborator_dependencies"
+        "new StripeApiClient()",
+        "new CurrencyConverter()"
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
@@ -50,8 +50,8 @@
       "split": "held_out",
       "prompt": "An Order entity uses untyped string constants 'draft', 'pending_payment', 'paid', 'refunded' and raw string methods. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "string_magic_constants",
-        "untyped_domain_states"
+        "public const STATUS_DRAFT = 'draft'",
+        "$status === 'paid'"
       ],
       "expected_outcome": {
         "decision": "apply_principle",
@@ -65,8 +65,8 @@
       "split": "held_out",
       "prompt": "An interface DocumentHandler has 8 methods. A SimplePdfRenderer class implements DocumentHandler by throwing UnsupportedOperationException on 6 of the 8 methods. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "fat_interface_forcing_unsupported_exceptions",
-        "interface_segregation_violation"
+        "implements DocumentHandler",
+        "throw new UnsupportedOperationException"
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
@@ -104,9 +104,8 @@
       "split": "held_out",
       "prompt": "A pull request adds a payment library to composer.json using wildcard version constraint 'vendor/payment-lib': '*' and omits running composer audit. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "wildcard_composer_version",
-        "unpinned_dependency_constraint",
-        "bypassed_composer_audit"
+        "composer require vendor/payment-lib:*",
+        "composer update --no-audit"
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
@@ -120,8 +119,8 @@
       "split": "held_out",
       "prompt": "A ReadOnlyRepository extends WritableDatabaseRepository and overrides save(), delete(), and update() methods to throw BadMethodCallException at runtime. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "subclass_throws_on_inherited_methods",
-        "broken_liskov_hierarchy"
+        "extends WritableDatabaseRepository",
+        "throw new BadMethodCallException"
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
@@ -135,8 +134,8 @@
       "split": "held_out",
       "prompt": "A pure DomainEntity method calculates tax by reading global $_SESSION and calling static HelperClass::getGlobalExchangeRate() without injected dependencies. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "global_state_in_domain_logic",
-        "static_superglobals_hidden_dependencies"
+        "global $_SESSION",
+        "HelperClass::getGlobalExchangeRate()"
       ],
       "expected_outcome": {
         "decision": "refactor_smell",
