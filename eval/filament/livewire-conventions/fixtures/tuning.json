@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": "tuning-livewire-blur-validation",
+      "split": "tuning",
+      "prompt": "A contact form needs validation feedback when user leaves email input without keystroke latency. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "raw_live_binding"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_wire_model_blur",
+        "primary_reason": "sync_on_blur_for_validation_without_per_keystroke_request"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-mount-re-execution",
+      "split": "tuning",
+      "prompt": "Developer expects mount() to execute on every Livewire button click. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "mount_rerun_assumption"
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_action_or_hydrate_hook",
+        "primary_reason": "mount_runs_only_once_on_initial_render"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-wire-key-repeater",
+      "split": "tuning",
+      "prompt": "Repeater block items flicker and lose focus on add row without stable key. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "unkeyed_repeater_row"
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_model_id_for_wire_key",
+        "primary_reason": "key_dynamic_loops_on_stable_primary_key_not_index"
+      },
+      "category": "should_use"
+    }
+  ]
+}
