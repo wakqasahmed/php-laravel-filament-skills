@@ -12,7 +12,7 @@ HELD_OUT = EVAL_DIR / "fixtures" / "held-out.json"
 TUNING = EVAL_DIR / "fixtures" / "tuning.json"
 CONTRACT_RULES = {
     "version check command": r"composer show filament/filament \| grep versions",
-    "v4 schema unification": r"v4 unifies forms and infolists under `Filament\\Schemas\\Schema`",
+    "v4 schema unification": r"v4 represents schemas with `Filament\\Schemas\\Schema`",
     "one resource per model": r"One resource per model",
     "relation managers": r"Use relation managers for related data, not custom inline tables",
     "policies over gates": r"Prefer policies for authorization over inline gate checks",
