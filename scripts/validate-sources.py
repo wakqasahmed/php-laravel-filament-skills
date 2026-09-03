@@ -7,6 +7,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCES_FILE = REPO_ROOT / "SOURCES.md"
 SKILLS_DIR = REPO_ROOT / "skills"
+SOURCE_ID_PATTERN = re.compile(r"`([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{2})`")
 
 
 def main() -> int:
@@ -27,9 +28,23 @@ def main() -> int:
     cited_ids = set()
     for skill_file in SKILLS_DIR.glob("**/SKILL.md"):
         text = skill_file.read_text(encoding="utf-8")
-        for match in re.findall(r"`([A-Z0-9-]+)`", text):
-            if match in defined_ids:
-                cited_ids.add(match)
+        cited_ids.update(SOURCE_ID_PATTERN.findall(text))
+
+    undefined_ids = cited_ids - defined_ids
+    uncited_ids = defined_ids - cited_ids
+
+    if undefined_ids:
+        print("ERROR: Source IDs cited by skills but not defined in SOURCES.md:", file=sys.stderr)
+        for id_ in sorted(undefined_ids):
+            print(f"  - {id_}", file=sys.stderr)
+
+    if uncited_ids:
+        print("ERROR: Source IDs defined in SOURCES.md but not cited by any skill:", file=sys.stderr)
+        for id_ in sorted(uncited_ids):
+            print(f"  - {id_}", file=sys.stderr)
+
+    if undefined_ids or uncited_ids:
+        return 1
 
     print(f"Found {len(defined_ids)} defined IDs in SOURCES.md:")
     for id_ in sorted(defined_ids):

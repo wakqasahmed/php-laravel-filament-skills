@@ -7,6 +7,8 @@ description: Follow Laravel conventions before adding routes, controllers, model
 
 Use this when writing or changing Laravel application code.
 
+The framework-specific guidance below cites Laravel's first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ROUTING-CONTROLLERS-01`, `LARAVEL-ELOQUENT-01`, `LARAVEL-AUTHORIZATION-01`, `LARAVEL-MIGRATIONS-01`, `LARAVEL-QUEUES-01`).
+
 ## Defaults
 
 - Inspect existing routes, models, config, tests, and installed Laravel version before choosing a pattern; match established project conventions where they are sound.
@@ -35,7 +37,7 @@ Use this when writing or changing Laravel application code.
 ## Production Migration Safety
 
 - Take a database backup immediately before running any migration that drops a column/table, renames a column, or transforms data in place. A destructive migration with no preceding backup is not deployable — document the backup step in the PR or deploy runbook, not just in your head.
-- `php artisan migrate` refuses to run against an environment where `app.env` is `production` unless you pass `--force`. Treat that prompt as a guardrail, not friction to script around — never bake `--force` into a deploy step that isn't gated by its own review/approval (CI job, deploy script) that a human or protected pipeline controls.
+- Potentially destructive migration commands prompt for confirmation in production unless you pass `--force`. Treat that prompt as a guardrail, not friction to script around — never bake `--force` into a deploy step that isn't gated by its own review/approval (CI job, deploy script) that a human or protected pipeline controls.
 - For any migration with meaningful table-lock time (adding an index or column to a large table, an unbounded `UPDATE` inside a migration) or any downtime-sensitive change, put the app in maintenance mode first: `php artisan down --secret=...` before, `php artisan up` after. Prefer `php artisan down --render="errors::503"` (or a custom view) over a bare 503, and confirm the app supports zero-downtime alternatives (online DDL tools, additive-then-backfill-then-cleanup migrations) before assuming `down` is required.
 - MySQL DDL (`ALTER TABLE`, `CREATE TABLE`, `DROP TABLE`) is not transactional — unlike PostgreSQL, a failed statement partway through a multi-statement migration can leave the schema partially applied, and Laravel's migration wrapping transaction will not roll back the already-committed DDL. Keep migrations small and single-purpose (one schema change per migration) so a failure is easy to diagnose and the blast radius is one operation, not five.
 - Test the migration's `down()` locally (`php artisan migrate:rollback`) before merging, not just `up()`. Do not ship a migration you can't cleanly reverse; if a migration is genuinely irreversible (e.g. it drops a column with data that isn't recoverable from the backup taken above), leave `down()` throwing `\RuntimeException` with a one-line explanation instead of a silent no-op, so a future rollback attempt fails loud instead of pretending to succeed.
@@ -63,7 +65,7 @@ Use this when writing or changing Laravel application code.
 
 - Dispatch jobs for external API calls, emails, exports, and heavy computations.
 - Use queues with retry limits and failed-job handling.
-- Keep job classes single-purpose and idempotent where possible.
+- Keep job classes single-purpose and make side effects safe to repeat because timeout and retry settings can cause a job to be processed twice. Use `ShouldBeUnique` when duplicate dispatches for the same logical job must be suppressed while its unique lock is held.
 - Use Horizon for Redis queue visibility and control when it is installed; otherwise follow the project's queue monitoring setup.
 
 ## Generated Files
