@@ -16,7 +16,10 @@ For a report you'd prefer not to make public initially, use [GitHub's private vu
 
 - `skills/php/php-principles/SKILL.md` instructs the agent to run `composer audit`.
 - `skills/laravel/laravel-conventions/SKILL.md` instructs the agent to run `php artisan test`, `php artisan route:list`, `php artisan about`, and `vendor/bin/pint` (or `duster`).
+- `skills/laravel/laravel-security/SKILL.md` instructs the agent to run affected feature/Pest tests (including tests with adversarial input) and `vendor/bin/pint --dirty` (or project equivalent).
+- `skills/laravel/laravel-testing/SKILL.md` instructs the agent to run `php artisan test --filter=<Name>`.
 - `skills/filament/filament-conventions/SKILL.md` instructs the agent to run `composer show filament/filament | grep versions`, `php artisan serve`, and affected Pest/feature tests.
 - `skills/filament/filament-plugin-first/SKILL.md` instructs the agent to search external sites (`filamentphp.com/plugins`, `github.com/spekulatius/awesome-filament`, `packagist.org`, GitHub code search) when evaluating plugins, and to run `composer show`, `composer why`, and `php artisan about`.
+- `skills/filament/livewire-conventions/SKILL.md` instructs the agent to run `composer show livewire/livewire` and manually reproduce component interactions in a browser.
 
 None of these commands are executed by this repo itself — they are recommendations for the agent to carry out under its own permission model, in the context of the project it's operating on.
