@@ -19,3 +19,5 @@ jobs:
         run: python3 scripts/test-validate-plugin.py
       - name: Run filament-plugin-first deterministic outcome contract
         run: bash eval/filament/filament-plugin-first/run-eval.sh --dry-run
+      - name: Run filament-conventions deterministic outcome contract
+        run: bash eval/filament/filament-conventions/run-eval.sh --dry-run

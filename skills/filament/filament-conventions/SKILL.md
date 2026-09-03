@@ -39,7 +39,7 @@ Match the project's installed major version. Never mix v3 and v4 snippets.
 
 - Use built-in columns and filters before custom ones.
 - Define actions, bulk actions, and filters declaratively.
-- Keep table queries efficient; eager load and defer heavy columns.
+- Prevent N+1 queries on relationship columns: whenever displaying a related model's attribute (e.g. `TextColumn::make('author.name')`), eager load the relationship in the resource's `getEloquentQuery()` or via `modifyQueryUsing(fn (Builder $query) => $query->with('author'))`. Defer or toggle heavy computed columns with `->toggleable(isToggledHiddenByDefault: true)` rather than loading them unconditionally on index.
 - Use record URLs and actions consistently across resources.
 
 ## Actions and Widgets
