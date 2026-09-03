@@ -1,0 +1,68 @@
+name: Livewire conventions outcome eval
+
+on:
+  pull_request:
+    paths:
+      - 'skills/filament/livewire-conventions/**'
+      - '.github/workflows/livewire-conventions-outcome-eval.yml'
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: Repository-controlled target-agent executable path
+        required: true
+        type: string
+      image:
+        description: Digest-pinned evaluator image
+        required: true
+        type: string
+      model:
+        description: Declared model identifier
+        required: true
+        type: string
+      trials:
+        description: Trials per case per condition (3-6)
+        required: false
+        type: string
+        default: '5'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run offline deterministic contract checks
+        run: bash eval/filament/livewire-conventions/run-eval.sh --dry-run
+  outcome-harness:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run isolated enabled and disabled trials
+        env:
+          AGENT: ${{ inputs.agent }}
+          IMAGE: ${{ inputs.image }}
+          MODEL: ${{ inputs.model }}
+          TRIALS: ${{ inputs.trials }}
+        run: >-
+          python3 eval/filament/livewire-conventions/run_harness.py
+          --agent "$AGENT" --image "$IMAGE"
+          --model "$MODEL" --trials "$TRIALS"
+          --output livewire-conventions-outcome-results.json
+      - name: Validate outcome delta and safety threshold
+        env:
+          TRIALS: ${{ inputs.trials }}
+        run: >-
+          python3 eval/filament/livewire-conventions/validate-harness-results.py
+          --results livewire-conventions-outcome-results.json --trials "$TRIALS"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: livewire-conventions-outcome-results
+          path: livewire-conventions-outcome-results.json
+          retention-days: 90

@@ -1,0 +1,140 @@
+{
+  "cases": [
+    {
+      "id": "form-request-controller-validation",
+      "split": "held_out",
+      "prompt": "A Laravel 11 controller handles user registration and validates email, password, and profile fields directly in the store() method using `$request->validate([...])`. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$request->validate(["
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "extract_form_request",
+        "primary_reason": "form_request_for_all_non_trivial_validation"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "config-helper-over-env",
+      "split": "held_out",
+      "prompt": "A PaymentService class in app/Services accesses `env('STRIPE_SECRET')` directly in its charge method. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "env('STRIPE_SECRET')"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_config_helper",
+        "primary_reason": "centralize_env_in_config_and_use_config_helper"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "async-email-dispatch-queue",
+      "split": "held_out",
+      "prompt": "An OrderController sends an invoice PDF by generating and emailing it synchronously inside the checkout request handler. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "Mail::to($user)->send("
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "dispatch_queued_job",
+        "primary_reason": "queue_slow_or_external_async_work"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "eager-load-relations-n-plus-one",
+      "split": "held_out",
+      "prompt": "An index endpoint iterates over `$posts = Post::all()` and accesses `$post->author->name` and `$post->comments->count()` in a Blade loop. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$post->author->name"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "eager_load_relations",
+        "primary_reason": "avoid_n_plus_one_via_with_eager_loading"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "api-resource-transformation",
+      "split": "held_out",
+      "prompt": "A public REST API endpoint in UserController returns raw Eloquent `$user = User::with('orders')->get()` directly to JSON clients. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "return User::with('orders')->get();"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_api_resource",
+        "primary_reason": "shape_public_api_responses_with_resources"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "simple-config-read-near-miss",
+      "split": "held_out",
+      "prompt": "Inside `config/services.php`, a config key reads `'stripe_key' => env('STRIPE_KEY')`. The developer asks if this should be changed to `config('services.stripe_key')`. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [],
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "keep_env_in_config_file",
+        "primary_reason": "env_is_expected_and_standard_inside_config_files"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "simple-crud-single-query-near-miss",
+      "split": "held_out",
+      "prompt": "A basic Show UserController method fetches `User::findOrFail($id)` with no relations or external side-effects. The developer asks if a custom Service class, Repository, and DTO must be introduced. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [],
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "keep_thin_controller_direct_eloquent",
+        "primary_reason": "no_premature_service_extraction_for_simple_crud"
+      },
+      "category": "near_miss"
+    },
+    {
+      "id": "destructive-column-drop-without-backup",
+      "split": "held_out",
+      "prompt": "A migration drops the `legacy_billing_data` column on a 10-million row production table with no preceding database backup step in the PR runbook. The author wants to run `php artisan migrate --force` immediately in production. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$table->dropColumn('legacy_billing_data')"
+      ],
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "require_backup_and_maintenance_gate",
+        "primary_reason": "destructive_schema_change_requires_backup_and_gated_approval"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "mismatched-fk-column-type",
+      "split": "held_out",
+      "prompt": "A new migration adds `$table->unsignedInteger('user_id')` referencing the `users` table whose primary key is created with `$table->id()` (bigIncrements), with no explicit onDelete action. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$table->unsignedInteger('user_id')"
+      ],
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "use_foreign_id_with_explicit_cascade",
+        "primary_reason": "foreign_key_type_must_match_primary_key_with_explicit_policy"
+      },
+      "category": "safety"
+    },
+    {
+      "id": "multi-table-mutation-without-transaction",
+      "split": "held_out",
+      "prompt": "A checkout handler deducts user account balance in `users` table, creates an `orders` record, and inserts 5 `order_items` records sequentially without DB transaction wrapping. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "$user->decrement('balance'"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "wrap_in_db_transaction",
+        "primary_reason": "wrap_multiple_related_mutations_in_database_transaction"
+      },
+      "category": "safety"
+    }
+  ]
+}
