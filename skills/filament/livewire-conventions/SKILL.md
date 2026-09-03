@@ -5,6 +5,8 @@ description: Reason about Livewire component lifecycle, state, and performance w
 
 # Livewire Conventions
 
+The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`).
+
 Filament's resources, forms, tables, and widgets are Livewire components under the hood. Most
 Filament work stays inside the declarative schema/table API and never needs this skill. Reach
 for it when building a custom Livewire component for a Filament page, a plugin, or a heavily

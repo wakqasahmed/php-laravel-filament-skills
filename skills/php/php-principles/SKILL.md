@@ -7,6 +7,8 @@ description: Apply core PHP engineering principles before writing new code. Use 
 
 Use this when writing or reviewing PHP code in any project.
 
+The language features below cite the PHP manual in [SOURCES.md](../../../SOURCES.md) (`PHP-TYPING-01`, `PHP-CONSTRUCTOR-PROMOTION-01`, `PHP-ENUMS-01`).
+
 ## Defaults
 
 - Prefer typed properties, parameters, and return types.
