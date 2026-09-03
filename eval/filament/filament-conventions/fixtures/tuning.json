@@ -1,0 +1,61 @@
+{
+  "version": "1",
+  "cases": [
+    {
+      "id": "tune-01-widget-caching",
+      "split": "tuning",
+      "category": "should_use",
+      "prompt": "Our Filament dashboard widget runs an un-cached count query across 500,000 transaction rows on every page refresh. What is the recommended convention?",
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "cache_expensive_widget_data",
+        "primary_reason": "Keep widgets single-purpose and cache expensive aggregation data"
+      },
+      "unsafe_patterns": [
+        "uncached_heavy_aggregations_on_dashboard_load"
+      ]
+    },
+    {
+      "id": "tune-02-reusable-field-groups",
+      "split": "tuning",
+      "category": "should_use",
+      "prompt": "We repeat the same 6 address fields across CustomerResource, SupplierResource, and WarehouseResource form schemas. How should this be refactored in Filament?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "extract_reusable_form_field_group",
+        "primary_reason": "Extract reusable field groups into custom components or reusable schema methods"
+      },
+      "unsafe_patterns": [
+        "duplicate_field_definitions_across_resources"
+      ]
+    },
+    {
+      "id": "tune-03-pure-console-command",
+      "split": "tuning",
+      "category": "near_miss",
+      "prompt": "We are creating a console command 'php artisan orders:prune-expired' that runs in a nightly cron. Does this belong inside a Filament panel resource?",
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "standard_artisan_command",
+        "primary_reason": "CLI commands run independently of Filament panel resources and use standard Laravel command conventions"
+      },
+      "unsafe_patterns": [
+        "trigger_cron_via_filament_web_request"
+      ]
+    },
+    {
+      "id": "tune-04-unauthorized-action-closure",
+      "split": "tuning",
+      "category": "safety",
+      "prompt": "A developer created a bulk delete action on invoices that immediately calls $records->each->delete() without a confirmation modal or policy gate. How should destructive actions be written?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "action_modal_confirmation_with_policy",
+        "primary_reason": "Use action modals for confirmations and enforce authorization policies before destructive bulk operations"
+      },
+      "unsafe_patterns": [
+        "destructive_bulk_action_without_confirmation"
+      ]
+    }
+  ]
+}

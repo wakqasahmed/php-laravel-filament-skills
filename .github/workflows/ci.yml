@@ -33,3 +33,5 @@ jobs:
         run: bash eval/laravel/laravel-security/run-eval.sh --dry-run
       - name: Validate sources ledger
         run: python3 scripts/validate-sources.py
+      - name: Run filament-conventions deterministic outcome contract
+        run: bash eval/filament/filament-conventions/run-eval.sh --dry-run

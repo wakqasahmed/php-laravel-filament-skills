@@ -1,0 +1,152 @@
+{
+  "version": "1",
+  "cases": [
+    {
+      "id": "fc-01-relationship-column-eager-load",
+      "split": "held_out",
+      "category": "should_use",
+      "prompt": "Our PostResource table defines TextColumn::make('author.name') and TextColumn::make('category.title'), but viewing the index triggers 50+ database queries for 25 records. How should we configure the table query according to Filament conventions?",
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "eager_load_relationships_via_modify_query",
+        "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing"
+      },
+      "unsafe_patterns": [
+        "->getStateUsing(fn ($record) => $record->author()->first()->name)",
+        "DB::table('users')->where('id', $record->author_id)->first()"
+      ]
+    },
+    {
+      "id": "fc-02-relation-managers-for-related-data",
+      "split": "held_out",
+      "category": "should_use",
+      "prompt": "In our OrderResource, we have an order items table rendered manually using a custom inline HTML table inside the order form schema. How should related records like order items be handled in Filament?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "use_relation_manager_for_related_records",
+        "primary_reason": "Use relation managers for related data rather than custom inline tables"
+      },
+      "unsafe_patterns": [
+        "->html()->formatStateUsing(fn ($record) => '<table>'",
+        "DB::select('select * from order_items where order_id = ?'"
+      ]
+    },
+    {
+      "id": "fc-03-policies-over-inline-gate-checks",
+      "split": "held_out",
+      "category": "should_use",
+      "prompt": "We are controlling record visibility and action availability in UserResource by placing inline closures ->visible(fn () => auth()->user()->is_admin) on each field, action, and table column. Is there a better convention?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "model_authorization_policies",
+        "primary_reason": "Prefer model authorization policies over scattered inline gate checks"
+      },
+      "unsafe_patterns": [
+        "->visible(fn () => auth()->user()->is_admin)",
+        "protected static bool $shouldSkipAuthorization = true;"
+      ]
+    },
+    {
+      "id": "fc-04-action-classes-over-inline-closures",
+      "split": "held_out",
+      "category": "should_use",
+      "prompt": "Our invoice download feature in OrderResource is written as a 120-line inline closure inside Action::make('downloadInvoice')->action(function ($record) { ... }). How should non-trivial custom actions be structured?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "custom_action_class",
+        "primary_reason": "Implement custom actions as dedicated action classes rather than monolithic inline closures"
+      },
+      "unsafe_patterns": [
+        "->action(function ($record) {",
+        "exec($record->invoice_command)"
+      ]
+    },
+    {
+      "id": "fc-05-centralized-tenancy-scope",
+      "split": "held_out",
+      "category": "should_use",
+      "prompt": "In our multi-tenant application, developers are manually adding ->where('team_id', session('active_team_id')) inside each resource's table query and form query. What is the Filament convention for tenant isolation?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "centralized_tenant_scope_in_panel_provider",
+        "primary_reason": "Centralize tenant scope in the panel provider or tenant middleware rather than scattering checks across resources"
+      },
+      "unsafe_patterns": [
+        "->where('team_id', session('active_team_id'))",
+        "whereRaw('team_id = ' . $teamId)"
+      ]
+    },
+    {
+      "id": "fc-06-public-livewire-page-outside-panel",
+      "split": "held_out",
+      "category": "near_miss",
+      "prompt": "We are building a public marketing pricing calculator as a standalone Livewire component on the marketing site (outside any Filament panel). Should we convert this page into a Filament Resource?",
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "standard_standalone_livewire_component",
+        "primary_reason": "Filament resource conventions apply to admin panel resources, not standalone public Livewire components"
+      },
+      "unsafe_patterns": [
+        "class PricingCalculatorResource extends Resource"
+      ]
+    },
+    {
+      "id": "fc-07-standard-filament-table-already-compliant",
+      "split": "held_out",
+      "category": "near_miss",
+      "prompt": "Our ProductResource already uses built-in TextColumn, SelectFilter, declarative actions, and eager loading via modifyQueryUsing. A team member suggested rewriting the columns into raw Blade views for flexibility. Should we refactor?",
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "declarative_built_in_table_components",
+        "primary_reason": "Built-in columns and filters already follow conventions and should be preferred over custom Blade replacements"
+      },
+      "unsafe_patterns": [
+        "ViewColumn::make('name')->view('filament.tables.columns.raw-product')"
+      ]
+    },
+    {
+      "id": "fc-08-general-api-controller",
+      "split": "held_out",
+      "category": "near_miss",
+      "prompt": "We need to expose a JSON endpoint for mobile devices to fetch customer notifications. Should we register a new Filament Resource Page to handle this JSON payload?",
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "laravel_api_resource_controller",
+        "primary_reason": "Use standard Laravel API Resources and controllers for mobile API endpoints, not Filament panel resources"
+      },
+      "unsafe_patterns": [
+        "class NotificationsApi extends Page"
+      ]
+    },
+    {
+      "id": "fc-09-v3-v4-version-mismatch",
+      "split": "held_out",
+      "category": "safety",
+      "prompt": "We upgraded our project to Filament v4. A developer copied an older snippet using Filament\\Forms\\Form and Filament\\Infolists\\Infolist. What should we do with this code?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "unify_schemas_under_filament_v4_api",
+        "primary_reason": "Filament v4 unifies forms and infolists under Filament\\Schemas\\Schema; do not mix deprecated v3 classes"
+      },
+      "unsafe_patterns": [
+        "public static function form(Form $form): Form",
+        "public function infolist(Infolist $infolist): Infolist"
+      ]
+    },
+    {
+      "id": "fc-10-raw-html-form-injection",
+      "split": "held_out",
+      "category": "safety",
+      "prompt": "A developer wants to bypass Filament schema fields by rendering raw unescaped HTML strings from user comments directly into a form modal using ViewField with unescaped HTML. How should forms be built?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "declarative_schema_field_components",
+        "primary_reason": "Build forms with declarative schema components and validated field types, not raw unescaped HTML"
+      },
+      "unsafe_patterns": [
+        "{!! $comment->body !!}",
+        "new HtmlString($comment->body)"
+      ]
+    }
+  ]
+}
