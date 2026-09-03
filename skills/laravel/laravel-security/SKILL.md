@@ -7,7 +7,7 @@ description: Harden Laravel/PHP code against mass-assignment, SQL injection, XSS
 
 Use this when writing or reviewing code that touches user input, models, raw queries, Blade output, or authorization.
 
-This pack has no evidence/citation registry (no `SOURCES.md`-equivalent exists in this repo). The guidance below is written directly from Laravel's documented behavior; if a claim needs a citation for a specific PR, verify it against the installed framework version rather than assuming an ID exists here.
+The normative security guidance below is grounded directly in Laravel's official documentation, cited by ID in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ELOQUENT-01`, `LARAVEL-SECURITY-CSRF-01`, `LARAVEL-BLADE-XSS-01`, `LARAVEL-AUTHORIZATION-01`).
 
 ## Mass Assignment
 
