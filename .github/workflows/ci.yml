@@ -31,3 +31,5 @@ jobs:
         run: bash eval/php/php-principles/run-eval.sh --dry-run
       - name: Run laravel-security deterministic outcome contract
         run: bash eval/laravel/laravel-security/run-eval.sh --dry-run
+      - name: Validate sources ledger
+        run: python3 scripts/validate-sources.py

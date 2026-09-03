@@ -7,6 +7,8 @@ description: Follow Pest testing conventions, factory/seeder patterns, and test-
 
 Use this when writing, changing, or running tests in a Laravel codebase.
 
+The Laravel testing APIs below cite first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-TESTING-DB-01`, `LARAVEL-TESTING-FAKES-01`, `LARAVEL-HTTP-TESTING-01`, `LARAVEL-STORAGE-TESTING-01`).
+
 ## Test-Database Safety — Non-Negotiable
 
 - Tests must run against disposable storage or a dedicated test database whose name **clearly contains `test`** (e.g. `app_test`, `myapp_testing`). Never run tests against staging, production, demo, or any shared operational database.
@@ -39,11 +41,11 @@ Use this when writing, changing, or running tests in a Laravel codebase.
 - Default to a feature test when in doubt: it proves the behavior a user actually depends on. Reach for a unit test when a feature test would be slow or indirect for testing pure logic (e.g. a pricing calculator with a dozen edge cases) — write one feature test for the integration and unit tests for the edge cases.
 - Don't unit-test framework glue (a Form Request that just calls `$this->authorize()` and returns `true`, a thin controller that delegates to a service) — a feature test covering the endpoint already proves it works.
 
-## RefreshDatabase Vs DatabaseTransactions
+## Resetting The Database
 
-- Use `RefreshDatabase` by default for feature tests that touch the database — it migrates once per test run and resets state between tests, giving a clean, predictable database for every test.
-- Use `DatabaseTransactions` instead only when the schema is already guaranteed present and stable (e.g. a persistent test database migrated out-of-band) and the overhead of `RefreshDatabase`'s migration/seeding step is a proven bottleneck — it wraps each test in a transaction and rolls back after, which is faster but assumes the schema doesn't change between tests.
-- Never disable both and rely on manual cleanup; a test that leaks state into the next test is a bug, not an optimization.
+- Use `RefreshDatabase` by default for feature tests that touch the database. When the schema is current, it executes each test in a transaction instead of migrating again; records created by tests that omit the trait can remain.
+- Use `DatabaseMigrations` or `DatabaseTruncation` when a test requires the database to be totally reset, accepting that both are significantly slower than `RefreshDatabase`.
+- Never omit database reset isolation and rely on manual cleanup; a test that leaks state into the next test is a bug, not an optimization.
 - If a test spans multiple database connections (e.g. testing a queue-backed job against a separate connection), verify the trait actually resets all connections used — `RefreshDatabase` only resets the connections it's configured for.
 
 ## Mocking And Faking External Services

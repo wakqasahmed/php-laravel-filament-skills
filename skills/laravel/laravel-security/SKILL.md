@@ -7,7 +7,7 @@ description: Harden Laravel/PHP code against mass-assignment, SQL injection, XSS
 
 Use this when writing or reviewing code that touches user input, models, raw queries, Blade output, or authorization.
 
-This pack has no evidence/citation registry (no `SOURCES.md`-equivalent exists in this repo). The guidance below is written directly from Laravel's documented behavior; if a claim needs a citation for a specific PR, verify it against the installed framework version rather than assuming an ID exists here.
+The normative security guidance below is grounded directly in Laravel's official documentation, cited by ID in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ELOQUENT-01`, `LARAVEL-SECURITY-CSRF-01`, `LARAVEL-BLADE-XSS-01`, `LARAVEL-AUTHORIZATION-01`).
 
 ## Mass Assignment
 
@@ -40,7 +40,7 @@ This pack has no evidence/citation registry (no `SOURCES.md`-equivalent exists i
 ## Authorization Bypass
 
 - Route-model binding resolving a model by ID proves the record exists — it proves nothing about whether the current user is allowed to see or modify it. A controller method that accepts `Post $post` via binding and never calls `$this->authorize('update', $post)` (or an equivalent policy check) is vulnerable to IDOR: any authenticated user can change the URL's ID and reach another user's resource.
-- Every controller action that reads or mutates a specific record must have an explicit authorization check tied to that record — `$this->authorize()`, `Gate::authorize()`, a policy method invoked directly, or `authorizeResource()` for full resource controllers. "The route required auth" is not the same as "the route checked ownership."
+- Every controller action that reads or mutates a specific record must have an explicit authorization check tied to that record — `$this->authorize()`, `Gate::authorize()`, or a policy method invoked directly. Laravel 10 full resource controllers may use `authorizeResource()`; check the installed major version before relying on that API. "The route required auth" is not the same as "the route checked ownership."
 - Form Requests should authorize inside `authorize()` using the bound route model (`$this->route('post')`), not just return `true` unconditionally — a Form Request with `authorize() { return true; }` provides validation but zero access control, and it's easy to mistake its presence for an authorization check.
 - In Filament, prefer policies (`viewAny`, `view`, `update`, `delete`, etc.) registered against the model over inline `->visible()`/`->hidden()` closures for gating actions — inline closures are easy to get inconsistent across resource, relation manager, and bulk actions, while a policy is enforced everywhere Filament checks authorization automatically. See `filament-conventions` for the broader "policies over inline gate checks" convention this extends.
 - When in doubt, treat "does this record belong to/is this action permitted for the current user" as a separate question from "does this record exist" — resolve existence via binding, resolve permission via an explicit policy check, every time.

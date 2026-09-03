@@ -7,6 +7,8 @@ description: Follow Filament conventions when building resources, forms, tables,
 
 Use this when building or changing Filament admin panel code.
 
+The version-specific schema guidance below cites Filament's first-party documentation in [SOURCES.md](../../../SOURCES.md) (`FILAMENT-SCHEMAS-01`).
+
 ## Detect the version first
 
 ```bash
@@ -15,8 +17,8 @@ composer show filament/filament | grep versions
 
 v3 and v4 have different APIs — check before writing or copying code:
 
-- v4 unifies forms and infolists under `Filament\Schemas\Schema`; v3 uses `Filament\Forms\Form` and `Filament\Infolists\Infolist`.
-- Component namespaces, layout components, and many method signatures moved in v4.
+- v4 represents schemas with `Filament\Schemas\Schema`, including form, infolist, layout, and action components.
+- The v4 upgrade guide records moved layout-component namespaces and changed component factory signatures; run its upgrade tooling and review every reported change before copying older snippets.
 - Plugins are version-specific; a v3 plugin will not install on v4 (see `filament-plugin-first`).
 
 Match the project's installed major version. Never mix v3 and v4 snippets.
