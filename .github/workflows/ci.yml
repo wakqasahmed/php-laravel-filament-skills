@@ -13,11 +13,19 @@ jobs:
       - uses: actions/checkout@v6
       - name: List skills
         run: scripts/list-skills.sh | grep -q "skills/filament/filament-plugin-first/SKILL.md"
+      - name: Validate entrypoint sync
+        run: diff -u <(sed '3d' AGENTS.md) <(sed '3d' CLAUDE.md)
       - name: Validate plugin paths
         run: python3 scripts/validate-plugin.py
       - name: Test plugin validator
         run: python3 scripts/test-validate-plugin.py
       - name: Run filament-plugin-first deterministic outcome contract
         run: bash eval/filament/filament-plugin-first/run-eval.sh --dry-run
+      - name: Run laravel-conventions deterministic outcome contract
+        run: bash eval/laravel/laravel-conventions/run-eval.sh --dry-run
+      - name: Run livewire-conventions deterministic outcome contract
+        run: bash eval/filament/livewire-conventions/run-eval.sh --dry-run
+      - name: Run laravel-testing deterministic outcome contract
+        run: bash eval/laravel/laravel-testing/run-eval.sh --dry-run
       - name: Validate sources ledger
         run: python3 scripts/validate-sources.py

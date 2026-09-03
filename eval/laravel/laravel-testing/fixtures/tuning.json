@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": "tuning-storage-fake",
+      "split": "tuning",
+      "prompt": "Test uploads PDF invoice to live S3 bucket during test run. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "live_s3_upload"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_storage_fake",
+        "primary_reason": "fake_storage_disks_in_tests"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-event-fake",
+      "split": "tuning",
+      "prompt": "Test asserts user registered event was dispatched. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "unfaked_events"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_event_fake",
+        "primary_reason": "fake_events_and_assert_dispatched"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-pest-dataset",
+      "split": "tuning",
+      "prompt": "Test duplicates same validation rule with 10 separate it() blocks instead of with(). State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "duplicate_test_blocks"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_pest_datasets",
+        "primary_reason": "use_datasets_for_multi_input_assertions"
+      },
+      "category": "should_use"
+    }
+  ]
+}

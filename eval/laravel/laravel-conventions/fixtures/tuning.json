@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": "tuning-queue-notification",
+      "split": "tuning",
+      "prompt": "Sending SMS notification to 1000 users inside web request controller loop. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "synchronous_inline_execution"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "dispatch_queued_job",
+        "primary_reason": "queue_slow_or_external_async_work"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-config-access",
+      "split": "tuning",
+      "prompt": "Calling `env('APP_URL')` in Blade template helper. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "direct_env_call"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_config_helper",
+        "primary_reason": "centralize_env_in_config_and_use_config_helper"
+      },
+      "category": "should_use"
+    },
+    {
+      "id": "tuning-foreign-key-index",
+      "split": "tuning",
+      "prompt": "A foreign key column is added without index on high-traffic table. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "unindexed_foreign_key"
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "index_foreign_key_column",
+        "primary_reason": "index_every_foreign_key_column"
+      },
+      "category": "should_use"
+    }
+  ]
+}
