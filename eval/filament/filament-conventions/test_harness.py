@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -49,7 +52,84 @@ def all_records(trials: int = 3) -> list[dict]:
     return records
 
 
+def run_reference_agent(case: dict, enabled: bool) -> dict:
+    agent = EVAL_DIR / "targets" / "reference-filament-conventions-agent.py"
+    with tempfile.TemporaryDirectory() as directory:
+        outcome_path = Path(directory) / "outcome.json"
+        payload = {"prompt": case["prompt"], "outcome_path": str(outcome_path)}
+        if enabled:
+            payload["skill_path"] = str(EVAL_DIR / "SKILL.md")
+        result = subprocess.run(
+            [sys.executable, str(agent)],
+            input=json.dumps(payload),
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        return {
+            "response": result.stdout.strip(),
+            "artifact": json.loads(outcome_path.read_text()),
+        }
+
+
 class HarnessTests(unittest.TestCase):
+    def test_validator_rejects_missing_case_condition(self):
+        validator = load_module("validator_missing_coverage", "validate-harness-results.py")
+        records = [
+            record
+            for record in all_records(3)
+            if not (record["case_id"] == "fc-06-public-livewire-page-outside-panel" and record["condition"] == "disabled")
+        ]
+
+        failures, _ = validator.validate(records, 3)
+
+        self.assertIn("missing results: fc-06-public-livewire-page-outside-panel/disabled", failures)
+
+    def test_run_harness_accepts_only_three_to_six_trials(self):
+        harness = EVAL_DIR / "run_harness.py"
+        base_args = [
+            sys.executable,
+            str(harness),
+            "--agent",
+            "missing-agent",
+            "--image",
+            "test@sha256:missing",
+            "--model",
+            "test-model",
+            "--output",
+            "missing-output",
+        ]
+
+        for trials in (0, 1, 2, 7):
+            result = subprocess.run([*base_args, "--trials", str(trials)], text=True, capture_output=True)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn("invalid choice", result.stderr)
+
+        for trials in (3, 4, 5, 6):
+            result = subprocess.run([*base_args, "--trials", str(trials)], text=True, capture_output=True)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertIn("agent must be a repository-controlled file", result.stderr)
+
+    def test_reference_agent_unsafe_alternatives_trigger_safety_patterns(self):
+        validator = load_module("validator_reference_safety", "validate-harness-results.py")
+        cases = json.loads((EVAL_DIR / "fixtures" / "held-out.json").read_text())["cases"]
+        records = []
+
+        for case in cases:
+            with self.subTest(case=case["id"], condition="enabled"):
+                enabled = run_reference_agent(case, enabled=True)
+                self.assertTrue(validator.is_safe(enabled, case))
+                for trial in range(1, 4):
+                    records.append(record_for(case, "enabled", trial, enabled["artifact"], enabled["response"]))
+            with self.subTest(case=case["id"], condition="disabled"):
+                disabled = run_reference_agent(case, enabled=False)
+                self.assertFalse(validator.is_safe(disabled, case))
+                for trial in range(1, 4):
+                    records.append(record_for(case, "disabled", trial, disabled["artifact"], disabled["response"]))
+
+        failures, _ = validator.validate(records, 3)
+        self.assertEqual(failures, [])
+
     def test_validator_rejects_forged_runner_fields(self):
         validator = load_module("validator", "validate-harness-results.py")
         case = load_case("fc-01-relationship-column-eager-load")
@@ -73,7 +153,7 @@ class HarnessTests(unittest.TestCase):
         safe_record = record_for(case, "enabled", 1, case["expected_outcome"])
         self.assertTrue(validator.is_safe(safe_record, case))
 
-        unsafe_record = record_for(case, "enabled", 1, case["expected_outcome"], response=json.dumps(case["expected_outcome"]) + " with query_relation_per_row_without_eager_loading")
+        unsafe_record = record_for(case, "enabled", 1, case["expected_outcome"], response=json.dumps(case["expected_outcome"]) + " " + case["unsafe_patterns"][0])
         self.assertFalse(validator.is_safe(unsafe_record, case))
 
     def test_validator_enforces_safety_regression_gate(self):

@@ -58,7 +58,7 @@ def main() -> int:
     parser.add_argument("--agent", type=Path, required=True)
     parser.add_argument("--image", required=True)
     parser.add_argument("--model", required=True)
-    parser.add_argument("--trials", type=int, choices=range(3, 7), default=5)
+    parser.add_argument("--trials", type=int, choices=[3, 4, 5, 6], default=5)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     agent = args.agent.resolve()

@@ -12,6 +12,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "eager_load_relationships_via_modify_query",
         "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing",
+        "unsafe_reason": "->getStateUsing(fn ($record) => $record->author()->first()->name)",
     },
     {
         "keywords": ["OrderResource", "order items table", "custom inline HTML table"],
@@ -19,6 +20,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "use_relation_manager_for_related_records",
         "primary_reason": "Use relation managers for related data rather than custom inline tables",
+        "unsafe_reason": "->html()->formatStateUsing(fn ($record) => '<table>'",
     },
     {
         "keywords": ["UserResource", "->visible(fn () => auth()->user()->is_admin)"],
@@ -26,6 +28,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "model_authorization_policies",
         "primary_reason": "Prefer model authorization policies over scattered inline gate checks",
+        "unsafe_reason": "->visible(fn () => auth()->user()->is_admin)",
     },
     {
         "keywords": ["downloadInvoice", "120-line inline closure"],
@@ -33,6 +36,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "custom_action_class",
         "primary_reason": "Implement custom actions as dedicated action classes rather than monolithic inline closures",
+        "unsafe_reason": "->action(function ($record) {",
     },
     {
         "keywords": ["multi-tenant", "session('active_team_id')"],
@@ -40,6 +44,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "centralized_tenant_scope_in_panel_provider",
         "primary_reason": "Centralize tenant scope in the panel provider or tenant middleware rather than scattering checks across resources",
+        "unsafe_reason": "->where('team_id', session('active_team_id'))",
     },
     {
         "keywords": ["public marketing pricing calculator", "standalone Livewire component", "outside any Filament panel"],
@@ -47,6 +52,7 @@ CONVENTION_RULES = [
         "decision": "preserve_existing",
         "chosen_pattern": "standard_standalone_livewire_component",
         "primary_reason": "Filament resource conventions apply to admin panel resources, not standalone public Livewire components",
+        "unsafe_reason": "class PricingCalculatorResource extends Resource",
     },
     {
         "keywords": ["ProductResource already uses built-in", "rewriting the columns into raw Blade views"],
@@ -54,6 +60,7 @@ CONVENTION_RULES = [
         "decision": "preserve_existing",
         "chosen_pattern": "declarative_built_in_table_components",
         "primary_reason": "Built-in columns and filters already follow conventions and should be preferred over custom Blade replacements",
+        "unsafe_reason": "ViewColumn::make('name')->view('filament.tables.columns.raw-product')",
     },
     {
         "keywords": ["JSON endpoint for mobile devices", "Filament Resource Page"],
@@ -61,6 +68,7 @@ CONVENTION_RULES = [
         "decision": "preserve_existing",
         "chosen_pattern": "laravel_api_resource_controller",
         "primary_reason": "Use standard Laravel API Resources and controllers for mobile API endpoints, not Filament panel resources",
+        "unsafe_reason": "class NotificationsApi extends Page",
     },
     {
         "keywords": ["upgraded our project to Filament v4", "Filament\\Forms\\Form"],
@@ -68,6 +76,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "unify_schemas_under_filament_v4_api",
         "primary_reason": "Filament v4 unifies forms and infolists under Filament\\Schemas\\Schema; do not mix deprecated v3 classes",
+        "unsafe_reason": "public static function form(Form $form): Form",
     },
     {
         "keywords": ["bypass Filament schema fields", "rendering raw unescaped HTML strings", "ViewField"],
@@ -75,6 +84,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "declarative_schema_field_components",
         "primary_reason": "Build forms with declarative schema components and validated field types, not raw unescaped HTML",
+        "unsafe_reason": "{!! $comment->body !!}",
     },
     # Tuning cases
     {
@@ -109,14 +119,14 @@ CONVENTION_RULES = [
 
 
 def outcome_for(prompt: str, enabled: bool) -> dict:
-    if not enabled:
-        return {
-            "decision": "preserve_existing",
-            "chosen_pattern": "inline_implementation",
-            "primary_reason": "keep_simplest_inline_solution",
-        }
     for rule in CONVENTION_RULES:
         if all(k in prompt for k in rule["keywords"]) and not any(k in prompt for k in rule["negative_keywords"]):
+            if not enabled:
+                return {
+                    "decision": "preserve_existing",
+                    "chosen_pattern": "inline_implementation",
+                    "primary_reason": rule.get("unsafe_reason", "keep_simplest_inline_solution"),
+                }
             return {
                 "decision": rule["decision"],
                 "chosen_pattern": rule["chosen_pattern"],

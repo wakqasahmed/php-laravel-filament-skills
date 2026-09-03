@@ -12,8 +12,8 @@
         "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing"
       },
       "unsafe_patterns": [
-        "query_relation_per_row_without_eager_loading",
-        "raw_db_query_inside_column"
+        "->getStateUsing(fn ($record) => $record->author()->first()->name)",
+        "DB::table('users')->where('id', $record->author_id)->first()"
       ]
     },
     {
@@ -27,8 +27,8 @@
         "primary_reason": "Use relation managers for related data rather than custom inline tables"
       },
       "unsafe_patterns": [
-        "custom_inline_html_table_inside_form",
-        "raw_sql_table_in_schema"
+        "->html()->formatStateUsing(fn ($record) => '<table>'",
+        "DB::select('select * from order_items where order_id = ?'"
       ]
     },
     {
@@ -42,8 +42,8 @@
         "primary_reason": "Prefer model authorization policies over scattered inline gate checks"
       },
       "unsafe_patterns": [
-        "inline_visible_closure_checks",
-        "disable_authorization_entirely"
+        "->visible(fn () => auth()->user()->is_admin)",
+        "protected static bool $shouldSkipAuthorization = true;"
       ]
     },
     {
@@ -57,8 +57,8 @@
         "primary_reason": "Implement custom actions as dedicated action classes rather than monolithic inline closures"
       },
       "unsafe_patterns": [
-        "inline_closure_action_with_monolithic_logic",
-        "raw_exec_in_action"
+        "->action(function ($record) {",
+        "exec($record->invoice_command)"
       ]
     },
     {
@@ -72,8 +72,8 @@
         "primary_reason": "Centralize tenant scope in the panel provider or tenant middleware rather than scattering checks across resources"
       },
       "unsafe_patterns": [
-        "scattered_inline_tenant_where_clauses",
-        "session_tenant_query_injection"
+        "->where('team_id', session('active_team_id'))",
+        "whereRaw('team_id = ' . $teamId)"
       ]
     },
     {
@@ -87,7 +87,7 @@
         "primary_reason": "Filament resource conventions apply to admin panel resources, not standalone public Livewire components"
       },
       "unsafe_patterns": [
-        "wrap_public_landing_in_filament_resource"
+        "class PricingCalculatorResource extends Resource"
       ]
     },
     {
@@ -101,7 +101,7 @@
         "primary_reason": "Built-in columns and filters already follow conventions and should be preferred over custom Blade replacements"
       },
       "unsafe_patterns": [
-        "rewrite_built_in_columns_as_custom_html"
+        "ViewColumn::make('name')->view('filament.tables.columns.raw-product')"
       ]
     },
     {
@@ -115,7 +115,7 @@
         "primary_reason": "Use standard Laravel API Resources and controllers for mobile API endpoints, not Filament panel resources"
       },
       "unsafe_patterns": [
-        "embed_mobile_api_in_filament_panel"
+        "class NotificationsApi extends Page"
       ]
     },
     {
@@ -129,8 +129,8 @@
         "primary_reason": "Filament v4 unifies forms and infolists under Filament\\Schemas\\Schema; do not mix deprecated v3 classes"
       },
       "unsafe_patterns": [
-        "mix_v3_form_and_v4_schema",
-        "deprecated_v3_form_namespace_in_v4"
+        "public static function form(Form $form): Form",
+        "public function infolist(Infolist $infolist): Infolist"
       ]
     },
     {
@@ -144,8 +144,8 @@
         "primary_reason": "Build forms with declarative schema components and validated field types, not raw unescaped HTML"
       },
       "unsafe_patterns": [
-        "raw_html_user_input_injection",
-        "bypass_schema_components_with_raw_html"
+        "{!! $comment->body !!}",
+        "new HtmlString($comment->body)"
       ]
     }
   ]

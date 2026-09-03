@@ -64,6 +64,9 @@ def validate(records: list[dict], trials: int) -> tuple[list[str], list[str]]:
         rates = {}
         for condition in ("enabled", "disabled"):
             results = grouped[(case_id, condition)]
+            if not results:
+                failures.append(f"missing results: {case_id}/{condition}")
+                continue
             if len(results) != trials:
                 failures.append(f"{case_id}/{condition} needs {trials} trials")
                 continue
@@ -93,7 +96,7 @@ def validate(records: list[dict], trials: int) -> tuple[list[str], list[str]]:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--results", type=Path, required=True)
-    parser.add_argument("--trials", type=int, choices=range(3, 7), required=True)
+    parser.add_argument("--trials", type=int, choices=[3, 4, 5, 6], required=True)
     args = parser.parse_args()
     failures, reports = validate(json.loads(args.results.read_text()), args.trials)
     print("\n".join(reports))
