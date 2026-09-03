@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import importlib.util
+import io
 import json
 import os
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from pathlib import Path
 
 
@@ -74,7 +76,7 @@ class HarnessTests(unittest.TestCase):
         records = all_records(3)
         for record in records:
             if record["case_id"] == case["id"] and record["condition"] == "enabled":
-                record["response"] = json.dumps(case["expected_outcome"]) + " note: production_data_in_test_database was considered"
+                record["response"] = json.dumps(case["expected_outcome"]) + " note: DB_DATABASE=app_production_snapshot was considered"
         failures, _ = validator.validate(records, 3)
         self.assertTrue(any("safety regressed" in failure for failure in failures))
 
@@ -95,6 +97,29 @@ class HarnessTests(unittest.TestCase):
         failures, _ = validator.validate(records, 3)
         self.assertTrue(any("incomplete trials" in failure for failure in failures))
 
+    def test_validator_rejects_an_entirely_missing_case_condition(self):
+        validator = load_module("validator_missing_group", "validate-harness-results.py")
+        records = [
+            record for record in all_records(3)
+            if not (record["case_id"] == "pest-functional-expect-syntax" and record["condition"] == "disabled")
+        ]
+        failures, _ = validator.validate(records, 3)
+        self.assertTrue(any(
+            "incomplete trials for pest-functional-expect-syntax (disabled): 0/3" in failure
+            for failure in failures
+        ))
+
+    def test_harness_restricts_trials_to_three_through_six(self):
+        harness = load_module("harness_trials", "run_harness.py")
+        required = ["--agent", "agent.py", "--image", "image", "--model", "model"]
+        for trials in (0, 1, 2, 7):
+            with self.subTest(trials=trials), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:
+                harness.parse_args([*required, "--trials", str(trials)])
+            self.assertEqual(error.exception.code, 2)
+        for trials in (3, 4, 5, 6):
+            with self.subTest(trials=trials):
+                self.assertEqual(harness.parse_args([*required, "--trials", str(trials)]).trials, trials)
+
     def test_reference_agent_passes_all_enabled_and_no_disabled_trials(self):
         target = load_module("target", "targets/reference-laravel-testing-agent.py")
         cases = json.loads((EVAL_DIR / "fixtures" / "held-out.json").read_text(encoding="utf-8"))["cases"]
@@ -103,6 +128,30 @@ class HarnessTests(unittest.TestCase):
             disabled_outcome = target.outcome_for(case["prompt"], False)
             if case["category"] == "should_use":
                 self.assertNotEqual(disabled_outcome, case["expected_outcome"])
+
+    def test_reference_agent_unsafe_alternatives_trigger_realistic_safety_patterns(self):
+        validator = load_module("validator_reference_safety", "validate-harness-results.py")
+        target = load_module("target_reference_safety", "targets/reference-laravel-testing-agent.py")
+        cases = json.loads((EVAL_DIR / "fixtures" / "held-out.json").read_text(encoding="utf-8"))["cases"]
+        records = []
+        for case in cases:
+            with self.subTest(case=case["id"], condition="enabled"):
+                artifact = target.outcome_for(case["prompt"], True)
+                self.assertTrue(validator.is_safe(record_for(case, "enabled", 1, artifact), case))
+            with self.subTest(case=case["id"], condition="disabled"):
+                artifact = target.outcome_for(case["prompt"], False)
+                output = json.dumps(artifact)
+                for pattern in case["unsafe_patterns"]:
+                    self.assertIn(pattern, output)
+                self.assertEqual(
+                    validator.is_safe(record_for(case, "disabled", 1, artifact), case),
+                    not bool(case["unsafe_patterns"]),
+                )
+            for condition in ("enabled", "disabled"):
+                artifact = target.outcome_for(case["prompt"], condition == "enabled")
+                records.extend(record_for(case, condition, trial, artifact) for trial in range(1, 4))
+        failures, _ = validator.validate(records, 3)
+        self.assertEqual(failures, [])
 
     def test_profile_admits_the_checked_in_reference_target(self):
         harness = load_module("harness", "run_harness.py")

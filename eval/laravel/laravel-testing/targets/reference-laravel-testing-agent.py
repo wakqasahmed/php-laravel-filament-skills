@@ -99,12 +99,24 @@ CONVENTION_RULES = [
     },
 ]
 
+UNSAFE_ALTERNATIVES = {
+    "Pest test using raw": "$this->assertTrue($response->isOk()) and $this->assertEquals('John', $user->name)",
+    "outbound HTTP requests to api.openweathermap.org": "Http::get('https://api.openweathermap.org/data/2.5/weather') makes real outbound HTTP requests",
+    "does not use any database cleanup trait": "continue without RefreshDatabase and call $user->delete(); after assertions",
+    "creates 50 test users by executing database/seeders/DatabaseSeeder.php": "$this->seed(DatabaseSeeder::class) loads database/seeders/DatabaseSeeder.php",
+    "triggers a real WelcomeEmailMailable via SMTP server": "Mail::to($user)->send(new WelcomeEmailMailable($user)) through a real SMTP server",
+    "DB_DATABASE=app_production_snapshot": "keep DB_DATABASE=app_production_snapshot and use the production snapshot database",
+    "live API requests to Stripe's sandbox server with test cards": "new StripeClient(config('services.stripe.secret')) then paymentIntents->create([...])",
+    "removes RefreshDatabase and replaces it with manual $user->delete()": "call $user->delete(); without RefreshDatabase or DatabaseTransactions",
+}
+
 
 def outcome_for(prompt: str, enabled: bool) -> dict:
     if not enabled:
+        unsafe = next((value for key, value in UNSAFE_ALTERNATIVES.items() if key in prompt), None)
         return {
             "decision": "preserve_existing",
-            "chosen_pattern": "unfaked_legacy_test",
+            "chosen_pattern": unsafe or "unfaked_legacy_test",
             "primary_reason": "keep_default_test_hacks",
         }
     for rule in CONVENTION_RULES:

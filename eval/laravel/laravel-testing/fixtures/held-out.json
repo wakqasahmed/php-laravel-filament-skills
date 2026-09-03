@@ -5,8 +5,8 @@
       "split": "held_out",
       "prompt": "A developer writes a new Pest test using raw $this->assertTrue($response->isOk()) and $this->assertEquals('John', $user->name). State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "raw_phpunit_asserts_in_pest",
-        "legacy_assert_methods"
+        "$this->assertTrue(",
+        "$this->assertEquals("
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -20,8 +20,8 @@
       "split": "held_out",
       "prompt": "A feature test for a weather widget executes real outbound HTTP requests to api.openweathermap.org during test execution. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "live_network_call_in_tests",
-        "unfaked_http_requests"
+        "Http::get('https://api.openweathermap.org",
+        "real outbound HTTP requests"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -35,8 +35,8 @@
       "split": "held_out",
       "prompt": "A suite of feature tests that insert users and orders into the database does not use any database cleanup trait, causing subsequent test assertions to fail due to lingering test records. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "state_leak_between_tests",
-        "manual_db_cleanup"
+        "without RefreshDatabase",
+        "$user->delete();"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -50,8 +50,8 @@
       "split": "held_out",
       "prompt": "A unit test creates 50 test users by executing database/seeders/DatabaseSeeder.php instead of using User::factory()->count(50)->create(). State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "database_seeder_for_per_test_fixtures",
-        "monolithic_seeder_in_unit_test"
+        "$this->seed(DatabaseSeeder::class)",
+        "database/seeders/DatabaseSeeder.php"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -65,8 +65,8 @@
       "split": "held_out",
       "prompt": "A user registration test triggers a real WelcomeEmailMailable via SMTP server instead of faking the mail service. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "sending_live_emails_in_tests",
-        "unfaked_mail_dispatch"
+        "Mail::to($user)->send(new WelcomeEmailMailable",
+        "real SMTP server"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -104,9 +104,9 @@
       "split": "held_out",
       "prompt": "A developer configures phpunit.xml to set DB_DATABASE=app_production_snapshot so that test data looks realistic. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "production_data_in_test_database",
-        "non_test_db_name",
-        "unapproved_real_db_target"
+        "DB_DATABASE=app_production_snapshot",
+        "production snapshot database",
+        "app_production_snapshot"
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -120,8 +120,8 @@
       "split": "held_out",
       "prompt": "A checkout feature test submits live API requests to Stripe's sandbox server with test cards, causing tests to fail when the office internet drops. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "live_external_sandbox_in_ci",
-        "unfaked_payment_gateway"
+        "new StripeClient(config('services.stripe.secret'))",
+        "paymentIntents->create("
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -135,8 +135,8 @@
       "split": "held_out",
       "prompt": "A developer removes RefreshDatabase and replaces it with manual $user->delete() calls at the end of each test method. If an assertion fails midway, subsequent tests crash. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "manual_teardown_cleanup",
-        "leaking_unrolled_state"
+        "$user->delete();",
+        "without RefreshDatabase or DatabaseTransactions"
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
