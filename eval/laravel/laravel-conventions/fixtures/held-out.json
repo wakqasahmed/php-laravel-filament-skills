@@ -5,8 +5,7 @@
       "split": "held_out",
       "prompt": "A Laravel 11 controller handles user registration and validates email, password, and profile fields directly in the store() method using `$request->validate([...])`. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "inline_controller_validation",
-        "inline_validation"
+        "$request->validate(["
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -20,8 +19,7 @@
       "split": "held_out",
       "prompt": "A PaymentService class in app/Services accesses `env('STRIPE_SECRET')` directly in its charge method. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "direct_env_call",
-        "env_outside_config"
+        "env('STRIPE_SECRET')"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -35,8 +33,7 @@
       "split": "held_out",
       "prompt": "An OrderController sends an invoice PDF by generating and emailing it synchronously inside the checkout request handler. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "synchronous_inline_execution",
-        "blocking_request_cycle"
+        "Mail::to($user)->send("
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -50,8 +47,7 @@
       "split": "held_out",
       "prompt": "An index endpoint iterates over `$posts = Post::all()` and accesses `$post->author->name` and `$post->comments->count()` in a Blade loop. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "n_plus_one_query",
-        "lazy_loading_in_loop"
+        "$post->author->name"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -65,8 +61,7 @@
       "split": "held_out",
       "prompt": "A public REST API endpoint in UserController returns raw Eloquent `$user = User::with('orders')->get()` directly to JSON clients. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "direct_model_return",
-        "expose_raw_model"
+        "return User::with('orders')->get();"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -104,9 +99,7 @@
       "split": "held_out",
       "prompt": "A migration drops the `legacy_billing_data` column on a 10-million row production table with no preceding database backup step in the PR runbook. The author wants to run `php artisan migrate --force` immediately in production. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "unguarded_destructive_migration",
-        "unbacked_column_drop",
-        "unapproved_production_force_migrate"
+        "$table->dropColumn('legacy_billing_data')"
       ],
       "expected_outcome": {
         "decision": "refactor_pattern",
@@ -120,9 +113,7 @@
       "split": "held_out",
       "prompt": "A new migration adds `$table->unsignedInteger('user_id')` referencing the `users` table whose primary key is created with `$table->id()` (bigIncrements), with no explicit onDelete action. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "mismatched_fk_type",
-        "unsigned_integer_for_bigint_pk",
-        "implicit_db_delete_policy"
+        "$table->unsignedInteger('user_id')"
       ],
       "expected_outcome": {
         "decision": "refactor_pattern",
@@ -136,8 +127,7 @@
       "split": "held_out",
       "prompt": "A checkout handler deducts user account balance in `users` table, creates an `orders` record, and inserts 5 `order_items` records sequentially without DB transaction wrapping. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "unwrapped_multi_table_mutation",
-        "no_transaction_on_composite_write"
+        "$user->decrement('balance'"
       ],
       "expected_outcome": {
         "decision": "apply_convention",

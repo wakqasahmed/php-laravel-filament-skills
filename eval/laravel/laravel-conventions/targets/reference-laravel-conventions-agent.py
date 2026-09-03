@@ -12,6 +12,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "extract_form_request",
         "primary_reason": "form_request_for_all_non_trivial_validation",
+        "unsafe_example": "$request->validate([",
     },
     {
         "keywords": ["PaymentService", "STRIPE_SECRET", "env("],
@@ -19,6 +20,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "use_config_helper",
         "primary_reason": "centralize_env_in_config_and_use_config_helper",
+        "unsafe_example": "env('STRIPE_SECRET')",
     },
     {
         "keywords": ["invoice PDF", "synchronously", "OrderController"],
@@ -26,6 +28,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "dispatch_queued_job",
         "primary_reason": "queue_slow_or_external_async_work",
+        "unsafe_example": "Mail::to($user)->send(",
     },
     {
         "keywords": ["Post::all()", "author->name", "Blade loop"],
@@ -33,6 +36,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "eager_load_relations",
         "primary_reason": "avoid_n_plus_one_via_with_eager_loading",
+        "unsafe_example": "$post->author->name",
     },
     {
         "keywords": ["public REST API", "UserController returns raw Eloquent"],
@@ -40,6 +44,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "use_api_resource",
         "primary_reason": "shape_public_api_responses_with_resources",
+        "unsafe_example": "return User::with('orders')->get();",
     },
     {
         "keywords": ["config/services.php", "stripe_key"],
@@ -61,6 +66,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "require_backup_and_maintenance_gate",
         "primary_reason": "destructive_schema_change_requires_backup_and_gated_approval",
+        "unsafe_example": "$table->dropColumn('legacy_billing_data')",
     },
     {
         "keywords": ["unsignedInteger('user_id')", "bigIncrements"],
@@ -68,6 +74,7 @@ CONVENTION_RULES = [
         "decision": "refactor_pattern",
         "chosen_pattern": "use_foreign_id_with_explicit_cascade",
         "primary_reason": "foreign_key_type_must_match_primary_key_with_explicit_policy",
+        "unsafe_example": "$table->unsignedInteger('user_id')",
     },
     {
         "keywords": ["deducts user account balance", "order_items"],
@@ -75,6 +82,7 @@ CONVENTION_RULES = [
         "decision": "apply_convention",
         "chosen_pattern": "wrap_in_db_transaction",
         "primary_reason": "wrap_multiple_related_mutations_in_database_transaction",
+        "unsafe_example": "$user->decrement('balance'",
     },
     {
         "keywords": ["SMS notification to 1000 users"],
@@ -101,19 +109,26 @@ CONVENTION_RULES = [
 
 
 def outcome_for(prompt: str, enabled: bool) -> dict:
+    matched_rule = next((
+        rule for rule in CONVENTION_RULES
+        if all(k in prompt for k in rule["keywords"])
+        and not any(k in prompt for k in rule["negative_keywords"])
+    ), None)
     if not enabled:
-        return {
+        outcome = {
             "decision": "preserve_existing",
             "chosen_pattern": "inline_implementation",
             "primary_reason": "keep_simplest_inline_solution",
         }
-    for rule in CONVENTION_RULES:
-        if all(k in prompt for k in rule["keywords"]) and not any(k in prompt for k in rule["negative_keywords"]):
-            return {
-                "decision": rule["decision"],
-                "chosen_pattern": rule["chosen_pattern"],
-                "primary_reason": rule["primary_reason"],
-            }
+        if matched_rule and "unsafe_example" in matched_rule:
+            outcome["unsafe_example"] = matched_rule["unsafe_example"]
+        return outcome
+    if matched_rule:
+        return {
+            "decision": matched_rule["decision"],
+            "chosen_pattern": matched_rule["chosen_pattern"],
+            "primary_reason": matched_rule["primary_reason"],
+        }
     return {
         "decision": "preserve_existing",
         "chosen_pattern": "inline_implementation",

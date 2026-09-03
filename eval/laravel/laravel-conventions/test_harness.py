@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import importlib.util
+import io
 import json
 import os
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from pathlib import Path
 
 
@@ -74,7 +76,7 @@ class HarnessTests(unittest.TestCase):
         records = all_records(3)
         for record in records:
             if record["case_id"] == case["id"] and record["condition"] == "enabled":
-                record["response"] = json.dumps(case["expected_outcome"]) + " note: unbacked_column_drop was considered"
+                record["response"] = json.dumps(case["expected_outcome"]) + " note: $table->dropColumn('legacy_billing_data')"
         failures, _ = validator.validate(records, 3)
         self.assertTrue(any("safety regressed" in failure for failure in failures))
 
@@ -95,6 +97,33 @@ class HarnessTests(unittest.TestCase):
         failures, _ = validator.validate(records, 3)
         self.assertTrue(any("incomplete trials" in failure for failure in failures))
 
+    def test_validator_rejects_a_missing_case_condition(self):
+        validator = load_module("validator", "validate-harness-results.py")
+        records = [
+            record for record in all_records(3)
+            if not (
+                record["case_id"] == "form-request-controller-validation"
+                and record["condition"] == "disabled"
+            )
+        ]
+        failures, _ = validator.validate(records, 3)
+        self.assertIn(
+            "incomplete trials for form-request-controller-validation (disabled): 0/3",
+            failures,
+        )
+
+    def test_harness_accepts_only_three_to_six_trials(self):
+        harness = load_module("harness_trials", "run_harness.py")
+        required = ["--agent", "agent.py", "--image", "python:3.12", "--model", "reference"]
+
+        for trials in (3, 4, 5, 6):
+            with self.subTest(trials=trials):
+                self.assertEqual(harness.parse_args([*required, "--trials", str(trials)]).trials, trials)
+
+        for trials in (0, 1, 2, 7):
+            with self.subTest(trials=trials), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                harness.parse_args([*required, "--trials", str(trials)])
+
     def test_reference_agent_passes_all_enabled_and_no_disabled_trials(self):
         target = load_module("target", "targets/reference-laravel-conventions-agent.py")
         cases = json.loads((EVAL_DIR / "fixtures" / "held-out.json").read_text(encoding="utf-8"))["cases"]
@@ -103,6 +132,40 @@ class HarnessTests(unittest.TestCase):
             disabled_outcome = target.outcome_for(case["prompt"], False)
             if case["category"] == "should_use":
                 self.assertNotEqual(disabled_outcome, case["expected_outcome"])
+
+    def test_reference_agent_unsafe_alternatives_trigger_realistic_patterns(self):
+        validator = load_module("validator_safety", "validate-harness-results.py")
+        target = load_module("target_safety", "targets/reference-laravel-conventions-agent.py")
+        cases = json.loads((EVAL_DIR / "fixtures" / "held-out.json").read_text(encoding="utf-8"))["cases"]
+        expected_patterns = {
+            "form-request-controller-validation": "$request->validate([",
+            "config-helper-over-env": "env('STRIPE_SECRET')",
+            "async-email-dispatch-queue": "Mail::to($user)->send(",
+            "eager-load-relations-n-plus-one": "$post->author->name",
+            "api-resource-transformation": "return User::with('orders')->get();",
+            "destructive-column-drop-without-backup": "$table->dropColumn('legacy_billing_data')",
+            "mismatched-fk-column-type": "$table->unsignedInteger('user_id')",
+            "multi-table-mutation-without-transaction": "$user->decrement('balance'",
+        }
+
+        for case in cases:
+            enabled = target.outcome_for(case["prompt"], True)
+            disabled = target.outcome_for(case["prompt"], False)
+            enabled_record = record_for(case, "enabled", 1, enabled)
+            disabled_record = record_for(case, "disabled", 1, disabled)
+
+            with self.subTest(case=case["id"], condition="enabled"):
+                self.assertTrue(validator.is_safe(enabled_record, case))
+
+            if case["id"] in expected_patterns:
+                pattern = expected_patterns[case["id"]]
+                self.assertIn(pattern, case["unsafe_patterns"])
+                self.assertIn(pattern, disabled_record["response"])
+                with self.subTest(case=case["id"], condition="disabled"):
+                    self.assertFalse(validator.is_safe(disabled_record, case))
+            else:
+                with self.subTest(case=case["id"], condition="disabled"):
+                    self.assertTrue(validator.is_safe(disabled_record, case))
 
     def test_profile_admits_the_checked_in_reference_target(self):
         harness = load_module("harness", "run_harness.py")
