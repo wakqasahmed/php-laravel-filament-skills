@@ -5,8 +5,7 @@
       "split": "held_out",
       "prompt": "A custom Livewire search component inside a Filament page uses wire:model.live on an input that runs heavy full-text DB searches on every keystroke, causing severe server lag. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "undebounced_live_query",
-        "raw_wire_model_live_on_heavy_search"
+        "wire:model.live=\"search\""
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -20,8 +19,7 @@
       "split": "held_out",
       "prompt": "A custom Livewire component in a Filament panel initializes $selectedTab as a local variable inside mount() instead of declaring public string $selectedTab = 'overview'. When a user clicks a button, the tab state resets back to overview. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "local_variable_for_persisted_state",
-        "unhydrated_component_state"
+        "$selectedTab = 'overview';"
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -35,8 +33,7 @@
       "split": "held_out",
       "prompt": "A custom repeater lists editable comment items in a Blade loop using index-based wire:key. When comments are deleted or reordered, input values leak across rows. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "index_based_wire_key",
-        "missing_stable_wire_key"
+        "wire:key=\"comment-{{ $loop->index }}\""
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -50,8 +47,7 @@
       "split": "held_out",
       "prompt": "A custom customer contact form inside a Filament page binds 10 text fields with wire:model.live even though validation only happens on submit. Each keystroke fires a server round trip. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "unnecessary_live_binding",
-        "network_chatter_on_simple_inputs"
+        "wire:model.live=\"contact.email\""
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -65,8 +61,7 @@
       "split": "held_out",
       "prompt": "A custom plugin Livewire component injects raw script and stylesheet link tags manually in its Blade view instead of using Filament's asset manager. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "manual_asset_tags_in_blade",
-        "bypass_filament_asset_registration"
+        "<script src=\"/js/plugin.js\"></script>"
       ],
       "expected_outcome": {
         "decision": "apply_convention",
@@ -80,7 +75,7 @@
       "split": "held_out",
       "prompt": "A developer wants to write a custom Livewire component with manual pagination, sorting, and search queries from scratch to display a simple database table in Filament. Filament's standard Table schema already supports all required columns and filters. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "unnecessary_custom_livewire_rewrite"
+        "use WithPagination;"
       ],
       "expected_outcome": {
         "decision": "preserve_existing",
@@ -106,8 +101,7 @@
       "split": "held_out",
       "prompt": "A custom Livewire component is embedded inside an admin Filament page. The component includes a deleteUserRecord action method that performs the deletion directly without calling Gate::authorize(), assuming the parent Filament page's canAccess() check is sufficient. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "unguarded_livewire_action",
-        "missing_method_level_authorization"
+        "User::findOrFail($this->userId)->delete();"
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -121,8 +115,7 @@
       "split": "held_out",
       "prompt": "A parent Filament page passes orderId to a child Livewire modal component in mount(). When the parent switches selected orders, the child modal continues displaying the old order details because it lacks a reactive wire:key. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "stale_child_prop_drilling",
-        "unkeyed_child_component_reuse"
+        "<livewire:order-modal :order-id=\"$orderId\" />"
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",
@@ -136,8 +129,7 @@
       "split": "held_out",
       "prompt": "A custom Livewire component renders a Filament form schema via getFormSchema() but attempts to bind form fields using raw Livewire properties rather than InteractsWithForms and form->getState(), causing silent data loss on save. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
       "unsafe_patterns": [
-        "unsupported_raw_and_schema_binding_mix",
-        "bypassing_interacts_with_forms"
+        "wire:model=\"email\""
       ],
       "expected_outcome": {
         "decision": "diagnose_fix",

@@ -38,7 +38,10 @@ def is_safe(record: dict, case: dict) -> bool:
     unsafe = case.get("unsafe_patterns", [])
     if not unsafe:
         return True
-    haystacks = [json.dumps(record.get("artifact", {})), record.get("response", "")]
+    artifact = record.get("artifact", {})
+    haystacks = [json.dumps(artifact), record.get("response", "")]
+    if isinstance(artifact, dict):
+        haystacks.extend(value for value in artifact.values() if isinstance(value, str))
     return not any(name in haystack for name in unsafe for haystack in haystacks)
 
 
@@ -59,22 +62,23 @@ def validate(records: list[dict], trials: int) -> tuple[list[str], list[str]]:
             seen.add(key)
             grouped[(case_id, condition)].append(record)
 
-    for (case_id, condition), case_records in grouped.items():
-        if len(case_records) != trials:
-            failures.append(f"incomplete trials for {case_id} ({condition}): {len(case_records)}/{trials}")
-            continue
-        case = cases[case_id]
-        expected = case["expected_outcome"]
-        passed_outcome = sum(outcome_matches(r["artifact"], expected) and response_matches(r["response"], expected) for r in case_records)
-        passed_safety = sum(is_safe(r, case) for r in case_records)
-        totals[condition]["outcome"] += passed_outcome
-        totals[condition]["safety"] += passed_safety
-        totals[condition]["trials"] += trials
-        rate = passed_outcome / trials
-        safety_rate = passed_safety / trials
-        reports.append(f"{case_id} [{condition}]: outcome={rate:.0%} safety={safety_rate:.0%}")
-        if condition == "enabled" and rate < ENABLED_OUTCOME_THRESHOLD:
-            failures.append(f"{case_id} enabled pass rate {rate:.0%} fell below {ENABLED_OUTCOME_THRESHOLD:.0%}")
+    for case_id, case in cases.items():
+        for condition in ("enabled", "disabled"):
+            case_records = grouped[(case_id, condition)]
+            if len(case_records) != trials:
+                failures.append(f"incomplete trials for {case_id} ({condition}): {len(case_records)}/{trials}")
+                continue
+            expected = case["expected_outcome"]
+            passed_outcome = sum(outcome_matches(r["artifact"], expected) and response_matches(r["response"], expected) for r in case_records)
+            passed_safety = sum(is_safe(r, case) for r in case_records)
+            totals[condition]["outcome"] += passed_outcome
+            totals[condition]["safety"] += passed_safety
+            totals[condition]["trials"] += trials
+            rate = passed_outcome / trials
+            safety_rate = passed_safety / trials
+            reports.append(f"{case_id} [{condition}]: outcome={rate:.0%} safety={safety_rate:.0%}")
+            if condition == "enabled" and rate < ENABLED_OUTCOME_THRESHOLD:
+                failures.append(f"{case_id} enabled pass rate {rate:.0%} fell below {ENABLED_OUTCOME_THRESHOLD:.0%}")
 
     enabled_totals = totals["enabled"]
     disabled_totals = totals["disabled"]

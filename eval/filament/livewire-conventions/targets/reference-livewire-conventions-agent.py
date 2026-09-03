@@ -99,14 +99,31 @@ CONVENTION_RULES = [
     },
 ]
 
+UNSAFE_EXAMPLES = {
+    "heavy full-text DB searches on every keystroke": 'Use <input wire:model.live="search"> and run the full-text query on every update.',
+    "$selectedTab": "Keep function mount(): void { $selectedTab = 'overview'; } without a public property.",
+    "index-based wire:key": 'Render each row with wire:key="comment-{{ $loop->index }}".',
+    "10 text fields with wire:model.live": 'Bind the email field with wire:model.live="contact.email".',
+    "raw script and stylesheet link tags manually": 'Add <script src="/js/plugin.js"></script> directly to the Blade view.',
+    "manual pagination, sorting, and search queries from scratch": "Build a custom component with use WithPagination; instead of the Filament table.",
+    "deleteUserRecord action method": "Delete directly with User::findOrFail($this->userId)->delete(); and rely on the parent page authorization.",
+    "passes orderId to a child Livewire modal component in mount()": 'Render <livewire:order-modal :order-id="$orderId" /> without a changing key.',
+    "raw Livewire properties rather than InteractsWithForms": 'Bind the schema input directly with wire:model="email".',
+}
+
 
 def outcome_for(prompt: str, enabled: bool) -> dict:
     if not enabled:
-        return {
+        outcome = {
             "decision": "preserve_existing",
             "chosen_pattern": "inline_component_logic",
             "primary_reason": "keep_raw_livewire_defaults",
         }
+        for prompt_fragment, unsafe_example in UNSAFE_EXAMPLES.items():
+            if prompt_fragment in prompt:
+                outcome["unsafe_example"] = unsafe_example
+                break
+        return outcome
     for rule in CONVENTION_RULES:
         if all(k in prompt for k in rule["keywords"]) and not any(k in prompt for k in rule["negative_keywords"]):
             return {

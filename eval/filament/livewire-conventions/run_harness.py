@@ -58,7 +58,7 @@ def main() -> int:
     parser.add_argument("--agent", type=Path, required=True)
     parser.add_argument("--image", required=True)
     parser.add_argument("--model", required=True)
-    parser.add_argument("--trials", type=int, default=3)
+    parser.add_argument("--trials", type=int, choices=range(3, 7), default=3)
     parser.add_argument("--output", type=Path, default=EVAL_DIR / "results.json")
     args = parser.parse_args()
 
