@@ -147,6 +147,22 @@
         "{!! $comment->body !!}",
         "new HtmlString($comment->body)"
       ]
+    },
+    {
+      "id": "fc-11-component-cross-field-validation",
+      "split": "held_out",
+      "category": "safety",
+      "prompt": "A custom Filament page has a Livewire-backed booking form with start_date and end_date fields. A developer proposes injecting StoreBookingRequest into the component action to enforce that end_date is after start_date. How should this cross-field validation use the component's actual form state?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "component_form_state_cross_field_validation",
+        "primary_reason": "Define cross-field rules in the Filament schema, Livewire component rules, or a Livewire form object and validate the state returned by $this->form->getState()"
+      },
+      "unsafe_patterns": [
+        "StoreBookingRequest",
+        "FormRequest",
+        "use a Form Request"
+      ]
     }
   ]
 }

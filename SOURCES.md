@@ -1,6 +1,6 @@
 # Source and Claim Ledger
 
-Last reviewed: 2026-09-03
+Last reviewed: 2026-09-05
 
 Each normative statement in this skillpack citing an ID below can be verified against the linked first-party documentation. Open the source to check the associated instruction. Source pages can change; verify against your installed framework and language versions before production use.
 
@@ -18,6 +18,8 @@ Each normative statement in this skillpack citing an ID below can be verified ag
 | `LARAVEL-HTTP-TESTING-01` | Laravel | [HTTP Client: Testing](https://laravel.com/docs/12.x/http-client#testing) | Stubbing outbound HTTP responses with `Http::fake()`, inspecting requests with `Http::assertSent()`, and preventing stray requests. |
 | `LARAVEL-STORAGE-TESTING-01` | Laravel | [File Storage: Testing](https://laravel.com/docs/12.x/filesystem#testing) | Creating a temporary test disk with `Storage::fake()` and asserting that files exist or are missing. |
 | `FILAMENT-SCHEMAS-01` | Filament | [Filament 4.x Upgrade Guide](https://filamentphp.com/docs/4.x/upgrade-guide); [Filament 4.x Schemas Overview](https://filamentphp.com/docs/4.x/schemas) | Filament v4 migration requirements and automated upgrade tooling; moved schema layout-component namespaces and changed component factory signatures; `Filament\Schemas\Schema` as the v4 container for form, infolist, layout, and action components. |
+| `FILAMENT-FORM-VALIDATION-01` | Filament | [Filament 5.x Form Validation](https://filamentphp.com/docs/5.x/forms/validation); [Adding a Form to a Livewire Component](https://filamentphp.com/docs/5.x/components/form) | Field validation through dedicated schema methods and `rules()`; cross-field closure rules using injected form state; validation and transformation of custom component form data through `$this->form->getState()`. |
+| `LIVEWIRE-FORM-VALIDATION-01` | Livewire | [Livewire 4.x Forms](https://livewire.laravel.com/docs/4.x/forms); [Livewire 4.x Validation](https://livewire.laravel.com/docs/4.x/validation) | Property validation with `#[Validate]`; component `rules()` for runtime rules; reusable validation logic in Livewire form objects; explicit validation before persistence. |
 | `LIVEWIRE-LIFECYCLE-01` | Livewire | [Livewire 3.x: Lifecycle Hooks](https://livewire.laravel.com/docs/3.x/lifecycle-hooks) | Livewire request lifecycle: initial render execution in `mount()`; rehydration in `hydrate()`; property mutation hooks; teardown and snapshotting in `dehydrate()`. |
 | `LIVEWIRE-KEYS-01` | Livewire | [Livewire 3.x: Nesting Components](https://livewire.laravel.com/docs/3.x/nesting#forcing-a-child-component-to-re-render) | Stable keys track nested components across renders; changing a child component key discards the old instance and re-initializes it from scratch. |
 | `LIVEWIRE-BINDING-01` | Livewire | [Livewire Documentation: Wire Model](https://livewire.laravel.com/docs/wire-model) | `wire:model` client-to-server synchronization; deferred binding by default; `.live` modifier with default 150ms debounce; `.blur` modifier for change-on-unfocus. |
@@ -32,6 +34,6 @@ Each normative statement in this skillpack citing an ID below can be verified ag
 | [`laravel-security`](skills/laravel/laravel-security/SKILL.md) | `LARAVEL-ELOQUENT-01`, `LARAVEL-SECURITY-CSRF-01`, `LARAVEL-BLADE-XSS-01`, `LARAVEL-AUTHORIZATION-01` |
 | [`laravel-conventions`](skills/laravel/laravel-conventions/SKILL.md) | `LARAVEL-ROUTING-CONTROLLERS-01`, `LARAVEL-ELOQUENT-01`, `LARAVEL-AUTHORIZATION-01`, `LARAVEL-MIGRATIONS-01`, `LARAVEL-QUEUES-01` |
 | [`laravel-testing`](skills/laravel/laravel-testing/SKILL.md) | `LARAVEL-TESTING-DB-01`, `LARAVEL-TESTING-FAKES-01`, `LARAVEL-HTTP-TESTING-01`, `LARAVEL-STORAGE-TESTING-01` |
-| [`filament-conventions`](skills/filament/filament-conventions/SKILL.md) | `FILAMENT-SCHEMAS-01` |
+| [`filament-conventions`](skills/filament/filament-conventions/SKILL.md) | `FILAMENT-SCHEMAS-01`, `FILAMENT-FORM-VALIDATION-01`, `LIVEWIRE-FORM-VALIDATION-01` |
 | [`livewire-conventions`](skills/filament/livewire-conventions/SKILL.md) | `LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01` |
 | [`php-principles`](skills/php/php-principles/SKILL.md) | `PHP-TYPING-01`, `PHP-CONSTRUCTOR-PROMOTION-01`, `PHP-ENUMS-01` |

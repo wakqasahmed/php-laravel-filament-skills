@@ -86,6 +86,14 @@ CONVENTION_RULES = [
         "primary_reason": "Build forms with declarative schema components and validated field types, not raw unescaped HTML",
         "unsafe_reason": "{!! $comment->body !!}",
     },
+    {
+        "keywords": ["Livewire-backed booking form", "end_date is after start_date", "component's actual form state"],
+        "negative_keywords": [],
+        "decision": "refactor_pattern",
+        "chosen_pattern": "component_form_state_cross_field_validation",
+        "primary_reason": "Define cross-field rules in the Filament schema, Livewire component rules, or a Livewire form object and validate the state returned by $this->form->getState()",
+        "unsafe_reason": "use a Form Request",
+    },
     # Tuning cases
     {
         "keywords": ["dashboard widget", "un-cached count query across 500,000 transaction rows"],
