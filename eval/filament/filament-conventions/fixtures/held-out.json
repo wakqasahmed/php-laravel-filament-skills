@@ -5,11 +5,11 @@
       "id": "fc-01-relationship-column-eager-load",
       "split": "held_out",
       "category": "should_use",
-      "prompt": "Our PostResource table defines TextColumn::make('author.name') and TextColumn::make('category.title'), but viewing the index triggers 50+ database queries for 25 records. How should we configure the table query according to Filament conventions?",
+      "prompt": "Our PostResource table displays related author and category details via closures: TextColumn::make('author_status')->getStateUsing(fn ($record) => $record->author->status) and TextColumn::make('category_info')->description(fn ($record) => $record->category->description), but viewing the index triggers 50+ database queries for 25 records. How should we configure the table query according to Filament conventions?",
       "expected_outcome": {
         "decision": "apply_convention",
         "chosen_pattern": "eager_load_relationships_via_modify_query",
-        "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing"
+        "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing when closures dereference relationships"
       },
       "unsafe_patterns": [
         "->getStateUsing(fn ($record) => $record->author()->first()->name)",
@@ -146,6 +146,20 @@
       "unsafe_patterns": [
         "{!! $comment->body !!}",
         "new HtmlString($comment->body)"
+      ]
+    },
+    {
+      "id": "fc-11-plain-dot-notated-column-no-manual-with",
+      "split": "held_out",
+      "category": "near_miss",
+      "prompt": "Our PostResource table defines plain dot-notated relationship columns TextColumn::make('author.name') and TextColumn::make('category.title'). A developer proposed adding modifyQueryUsing(fn ($query) => $query->with(['author', 'category'])) to avoid N+1 queries. Is manual eager loading required here?",
+      "expected_outcome": {
+        "decision": "preserve_existing",
+        "chosen_pattern": "automatic_dot_notation_eager_loading",
+        "primary_reason": "Filament automatically eager loads dot-notated relationship columns like author.name without manual with() queries"
+      },
+      "unsafe_patterns": [
+        "modifyQueryUsing(fn (Builder $query) => $query->with(['author', 'category']))"
       ]
     }
   ]
