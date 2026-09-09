@@ -23,7 +23,7 @@ def unsafe_reason(candidate: dict) -> str | None:
         return "unapproved_paid"
     if candidate.get("license", "").upper() not in ALLOWED_LICENSES:
         return "incompatible_license"
-    if candidate.get("untrusted_instructions_present") or "SYSTEM OVERRIDE" in candidate.get("readme_instructions", ""):
+    if candidate.get("untrusted_instructions_present") or "Disregard prior" in candidate.get("readme_instructions", ""):
         return "prompt_injection"
     if candidate.get("has_custom_install_scripts") or not candidate.get("sandbox_safe", True):
         return "unsafe_composer_scripts"
