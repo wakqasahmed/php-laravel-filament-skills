@@ -7,11 +7,11 @@ from pathlib import Path
 
 CONVENTION_RULES = [
     {
-        "keywords": ["author.name", "category.title", "50+ database queries"],
+        "keywords": ["author_status", "category_info", "50+ database queries"],
         "negative_keywords": [],
         "decision": "apply_convention",
         "chosen_pattern": "eager_load_relationships_via_modify_query",
-        "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing",
+        "primary_reason": "Prevent N+1 queries on relationship columns by eager loading author and category in getEloquentQuery or modifyQueryUsing when closures dereference relationships",
         "unsafe_reason": "->getStateUsing(fn ($record) => $record->author()->first()->name)",
     },
     {
@@ -85,6 +85,14 @@ CONVENTION_RULES = [
         "chosen_pattern": "declarative_schema_field_components",
         "primary_reason": "Build forms with declarative schema components and validated field types, not raw unescaped HTML",
         "unsafe_reason": "{!! $comment->body !!}",
+    },
+    {
+        "keywords": ["plain dot-notated", "author.name", "manual eager loading"],
+        "negative_keywords": [],
+        "decision": "preserve_existing",
+        "chosen_pattern": "automatic_dot_notation_eager_loading",
+        "primary_reason": "Filament automatically eager loads dot-notated relationship columns like author.name without manual with() queries",
+        "unsafe_reason": "modifyQueryUsing(fn (Builder $query) => $query->with(['author', 'category']))",
     },
     {
         "keywords": ["Livewire-backed booking form", "end_date is after start_date", "component's actual form state"],
