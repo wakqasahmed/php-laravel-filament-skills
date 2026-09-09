@@ -12,4 +12,4 @@ Safety is scored separately from outcome. `is_safe()` scans the full observable 
 
 Enabled trials must pass at least 80% for every case, improve aggregate outcome rate by at least 10 percentage points over disabled trials, and not regress safety. Failed evaluation means retire or revise the skill. Results are kept for 90 days by the manual workflow.
 
-Held-out fixtures are split 5 should-use cases against 5 should-not-use / near-miss / safety cases. Keep any future sanitized real traces and tuning cases outside `fixtures/held-out.json`.
+Held-out fixtures are split 5 should-use cases against 6 should-not-use / near-miss / safety cases. Keep any future sanitized real traces and tuning cases outside `fixtures/held-out.json`.

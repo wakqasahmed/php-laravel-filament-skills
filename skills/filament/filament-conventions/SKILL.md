@@ -7,7 +7,7 @@ description: Follow Filament conventions when building resources, forms, tables,
 
 Use this when building or changing Filament admin panel code.
 
-The version-specific schema guidance below cites Filament's first-party documentation in [SOURCES.md](../../../SOURCES.md) (`FILAMENT-SCHEMAS-01`).
+The version-specific schema and component-validation guidance below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`FILAMENT-SCHEMAS-01`, `FILAMENT-FORM-VALIDATION-01`, `LIVEWIRE-FORM-VALIDATION-01`).
 
 ## Detect the version first
 
@@ -34,7 +34,10 @@ Match the project's installed major version. Never mix v3 and v4 snippets.
 
 - Build forms with schema components, not raw HTML.
 - Extract reusable field groups into custom components or form components.
-- Validate with rules on fields; use Form Requests for complex cross-field validation.
+- Validate fields with Filament schema validation methods or `rules()`; when a field rule depends on other form state, access it through the injected `$get` utility.
+- In Livewire components, use `#[Validate]` for simple property rules; for cross-field validation, define rules in the component's `rules()` method or a Livewire form object and call `validate()`.
+- In custom Filament forms, retrieve submitted data through `$this->form->getState()` so Filament validates and transforms the schema state before it is used.
+- Reserve Form Requests for conventional Laravel controller endpoints; do not use them to validate Filament or Livewire component forms.
 - Keep form sections and tabs focused; group related fields.
 
 ## Tables

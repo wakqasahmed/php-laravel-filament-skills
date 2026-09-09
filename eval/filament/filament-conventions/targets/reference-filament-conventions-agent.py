@@ -94,6 +94,14 @@ CONVENTION_RULES = [
         "primary_reason": "Filament automatically eager loads dot-notated relationship columns like author.name without manual with() queries",
         "unsafe_reason": "modifyQueryUsing(fn (Builder $query) => $query->with(['author', 'category']))",
     },
+    {
+        "keywords": ["Livewire-backed booking form", "end_date is after start_date", "component's actual form state"],
+        "negative_keywords": [],
+        "decision": "refactor_pattern",
+        "chosen_pattern": "component_form_state_cross_field_validation",
+        "primary_reason": "Define cross-field rules in the Filament schema, Livewire component rules, or a Livewire form object and validate the state returned by $this->form->getState()",
+        "unsafe_reason": "use a Form Request",
+    },
     # Tuning cases
     {
         "keywords": ["dashboard widget", "un-cached count query across 500,000 transaction rows"],

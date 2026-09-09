@@ -17,9 +17,16 @@ CONTRACT_RULES = {
     "relation managers": r"Use relation managers for related data, not custom inline tables",
     "policies over gates": r"Prefer policies for authorization over inline gate checks",
     "schema components over raw html": r"Build forms with schema components, not raw HTML",
+    "livewire validation attributes": r"use `#\[Validate\]` for simple property rules",
+    "cross-field component rules": r"cross-field validation.*component's `rules\(\)` method or a Livewire form object",
+    "validated filament form state": r"\$this->form->getState\(\)",
+    "form requests only for controllers": r"Reserve Form Requests for conventional Laravel controller endpoints",
     "eager load relationships": r"Prevent N\+1 queries on relationship columns",
     "custom action classes": r"Implement custom actions as action classes, not inline closures",
     "centralize tenant scope": r"Centralize tenant scope in the panel provider or middleware",
+}
+FORBIDDEN_RULES = {
+    "form requests for cross-field component validation": r"use Form Requests? for complex cross-field validation",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}
@@ -72,6 +79,7 @@ def validate_corpus(held_out_path: Path = HELD_OUT, tuning_path: Path = TUNING) 
 if __name__ == "__main__":
     text = SKILL.read_text(encoding="utf-8")
     failures = [f"SKILL.md is missing required contract text: {name}" for name, pattern in CONTRACT_RULES.items() if not re.search(pattern, text)]
+    failures.extend(f"SKILL.md contains forbidden contract text: {name}" for name, pattern in FORBIDDEN_RULES.items() if re.search(pattern, text, re.IGNORECASE))
     failures.extend(validate_corpus())
     if failures:
         print("FAIL: deterministic filament-conventions contract checks")
