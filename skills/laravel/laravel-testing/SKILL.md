@@ -7,7 +7,7 @@ description: Follow Pest testing conventions, factory/seeder patterns, and test-
 
 Use this when writing, changing, or running tests in a Laravel codebase.
 
-The Laravel testing APIs below cite first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-TESTING-DB-01`, `LARAVEL-TESTING-FAKES-01`, `LARAVEL-HTTP-TESTING-01`, `LARAVEL-STORAGE-TESTING-01`).
+The Laravel testing APIs below cite first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-TESTING-DB-01`, `LARAVEL-TESTING-FAKES-01`, `LARAVEL-HTTP-TESTING-01`, `LARAVEL-STORAGE-TESTING-01`, `PEST-TESTING-01`).
 
 ## Test-Database Safety — Non-Negotiable
 
@@ -19,8 +19,10 @@ The Laravel testing APIs below cite first-party documentation in [SOURCES.md](..
 
 ## Pest Conventions
 
+- Verify the installed Pest major version (`composer show pestphp/pest | grep versions`) before writing or updating tests; Pest 3, 4, and 5 provide distinct features and syntax expectations (`PEST-TESTING-01`).
 - Prefer Pest's functional syntax (`it('does x', function () { ... })` or `test('...', function () { ... })`) over PHPUnit class-based tests for new test files.
 - Use `expect()` assertions (`expect($value)->toBe(...)`, `->toBeTrue()`, `->toContain(...)`) instead of raw PHPUnit `assert*` calls — they read closer to the behavior being described and chain cleanly.
+- In Pest 5, leverage architectural testing (`arch()->expect('App\Models')->toOnlyBeUsedIn(...)`), streamlined datasets, and native expectation chaining.
 - Use `beforeEach()` for setup shared across `it()` blocks in a file instead of repeating the same arrange steps in every test.
 - Use datasets (`->with([...])`) when the same assertion needs to run against multiple inputs, instead of copy-pasting near-identical tests.
 - Group related tests with `describe()` blocks when a file covers multiple behaviors of the same subject, so failures are easy to locate by name.
@@ -58,5 +60,6 @@ The Laravel testing APIs below cite first-party documentation in [SOURCES.md](..
 
 ## Verification
 
+- Confirm installed test runners and versions (`composer show pestphp/pest | grep versions`).
 - Run `php artisan test --filter=<Name>` for the tests affected by a change; run the full suite only when asked or before a release gate.
 - Confirm the active database connection during test runs is the disposable/test one (see Test-Database Safety above) before trusting results from a new environment.

@@ -85,6 +85,14 @@ CONVENTION_RULES = [
         "unsafe_example": "$user->decrement('balance'",
     },
     {
+        "keywords": ["Laravel 13", "PHP 8.3", "streamlined bootstrap"],
+        "negative_keywords": [],
+        "decision": "refactor_pattern",
+        "chosen_pattern": "streamlined_laravel_bootstrap_and_version_alignment",
+        "primary_reason": "align_with_laravel_13_streamlined_bootstrap_and_active_release_policy",
+        "unsafe_example": "legacy Laravel 10 kernel and service provider bootstrap",
+    },
+    {
         "keywords": ["SMS notification to 1000 users"],
         "negative_keywords": [],
         "decision": "apply_convention",

@@ -9,7 +9,8 @@ from pathlib import Path
 
 
 EVAL_DIR = Path(__file__).resolve().parent
-SKILL = EVAL_DIR.parent / "SKILL.md"
+ROOT = EVAL_DIR.parents[2] if len(EVAL_DIR.parents) >= 3 else EVAL_DIR.parent
+SKILL = (EVAL_DIR.parent / "SKILL.md") if (EVAL_DIR.parent / "SKILL.md").exists() else (ROOT / "skills" / "filament" / "filament-plugin-first" / "SKILL.md")
 HELD_OUT = EVAL_DIR / "fixtures" / "held-out.json"
 TUNING = EVAL_DIR / "fixtures" / "tuning.json"
 TARGET_AGENT = EVAL_DIR / "targets" / "reference-filament-plugin-first-agent.py"

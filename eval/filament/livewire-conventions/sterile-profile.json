@@ -1,4 +1,4 @@
 {
   "images": ["python:3.12-alpine@sha256:aa679aa4eed6eb56c1dc6ad3f1b98b7d2d788fd961596779d188fdedad97fb38"],
-  "targets": [{"path":"eval/filament/livewire-conventions/targets/reference-livewire-conventions-agent.py","sha256":"96cdb0ae03f183bd887abffb5b18f3be80deab57832678e7790664ccca952727"}]
+  "targets": [{"path":"eval/filament/livewire-conventions/targets/reference-livewire-conventions-agent.py","sha256":"7748794c46b51b353ac504eb7b70655cb9fcf545b8badd354976571d403f5f78"}]
 }

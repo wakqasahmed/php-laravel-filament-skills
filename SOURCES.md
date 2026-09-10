@@ -31,6 +31,10 @@ Each normative statement in this skillpack citing an ID below can be verified ag
 | `COMPOSER-AUDIT-01` | Composer | [Composer CLI: audit](https://getcomposer.org/doc/03-cli.md#audit) | `composer audit` compares installed packages against published security advisories from the Packagist security database; `--locked` audits dependencies recorded in `composer.lock` without updating them. |
 | `FILAMENT-SECURITY-UPLOADS-01` | Filament | [Filament 5.x Security: Restricting File Uploads to Schema Components](https://filamentphp.com/docs/5.x/advanced/security#restricting-file-uploads-to-schema-components) | Components using `InteractsWithSchemas` expose Livewire upload endpoints (`_startUpload`, `_finishUpload`) that can target arbitrary public properties unless protected by `Filament\Schemas\Concerns\RestrictsFileUploadsToSchemaComponents`, which rejects unauthorized upload targets with HTTP 403. |
 | `LIVEWIRE-SECURITY-LOCKED-01` | Livewire | [Livewire 4.x Security](https://livewire.laravel.com/docs/4.x/security); [Livewire 4.x Locked Attribute](https://livewire.laravel.com/docs/4.x/attribute-locked) | Livewire public properties and action parameters are client-controlled untrusted input; `#[Locked]` prevents client tampering with immutable properties by rejecting modifications; action methods must authorize and validate operations on every request. |
+| `LARAVEL-RELEASES-01` | Laravel | [Laravel Releases](https://laravel.com/docs/13.x/releases) | Laravel major release cycle, PHP version requirements (PHP 8.3+ for Laravel 13), and streamlined application bootstrap structure. |
+| `FILAMENT-UPGRADE-5-01` | Filament | [Filament 5.x Upgrade Guide](https://filamentphp.com/docs/5.x/upgrade-guide) | Filament 5 requirements (Livewire 4, PHP 8.3+); schema unification under `Filament\Schemas\Schema`; `HasSchemas` and `InteractsWithSchemas` for Livewire component schemas; plugin compatibility across major versions. |
+| `LIVEWIRE-UPGRADE-4-01` | Livewire | [Livewire 4.x Documentation](https://livewire.laravel.com/docs/4.x/quickstart); [Livewire 4.x Upgrade Guide](https://livewire.laravel.com/docs/4.x/upgrade) | Livewire 4 requirements, reactive properties, component lifecycle, and integration with Filament 5. |
+| `PEST-TESTING-01` | Pest | [Pest 5.x Upgrade Guide](https://pestphp.com/docs/upgrade-guide); [Pest Documentation](https://pestphp.com/docs) | Pest 5 functional test conventions, expectation chaining with `expect()`, datasets, and architectural testing assertions. |
 
 ## Which skills cite this ledger
 
@@ -38,8 +42,9 @@ Each normative statement in this skillpack citing an ID below can be verified ag
 |---|---|
 | [`filament-plugin-first`](skills/filament/filament-plugin-first/SKILL.md) | `COMPOSER-UNTRUSTED-PACKAGES-01`, `OWASP-PROMPT-INJECTION-01` |
 | [`laravel-security`](skills/laravel/laravel-security/SKILL.md) | `LARAVEL-ELOQUENT-01`, `LARAVEL-SECURITY-CSRF-01`, `LARAVEL-BLADE-XSS-01`, `LARAVEL-AUTHORIZATION-01`, `COMPOSER-AUDIT-01` |
-| [`laravel-conventions`](skills/laravel/laravel-conventions/SKILL.md) | `LARAVEL-ROUTING-CONTROLLERS-01`, `LARAVEL-ELOQUENT-01`, `LARAVEL-AUTHORIZATION-01`, `LARAVEL-MIGRATIONS-01`, `LARAVEL-QUEUES-01` |
-| [`laravel-testing`](skills/laravel/laravel-testing/SKILL.md) | `LARAVEL-TESTING-DB-01`, `LARAVEL-TESTING-FAKES-01`, `LARAVEL-HTTP-TESTING-01`, `LARAVEL-STORAGE-TESTING-01` |
-| [`filament-conventions`](skills/filament/filament-conventions/SKILL.md) | `FILAMENT-SCHEMAS-01`, `FILAMENT-FORM-VALIDATION-01`, `LIVEWIRE-FORM-VALIDATION-01`, `FILAMENT-SECURITY-UPLOADS-01` |
-| [`livewire-conventions`](skills/filament/livewire-conventions/SKILL.md) | `LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`, `LIVEWIRE-SECURITY-LOCKED-01` |
+| [`laravel-conventions`](skills/laravel/laravel-conventions/SKILL.md) | `LARAVEL-ROUTING-CONTROLLERS-01`, `LARAVEL-ELOQUENT-01`, `LARAVEL-AUTHORIZATION-01`, `LARAVEL-MIGRATIONS-01`, `LARAVEL-QUEUES-01`, `LARAVEL-RELEASES-01` |
+| [`laravel-testing`](skills/laravel/laravel-testing/SKILL.md) | `LARAVEL-TESTING-DB-01`, `LARAVEL-TESTING-FAKES-01`, `LARAVEL-HTTP-TESTING-01`, `LARAVEL-STORAGE-TESTING-01`, `PEST-TESTING-01` |
+| [`filament-conventions`](skills/filament/filament-conventions/SKILL.md) | `FILAMENT-SCHEMAS-01`, `FILAMENT-FORM-VALIDATION-01`, `LIVEWIRE-FORM-VALIDATION-01`, `FILAMENT-SECURITY-UPLOADS-01`, `FILAMENT-UPGRADE-5-01` |
+| [`livewire-conventions`](skills/filament/livewire-conventions/SKILL.md) | `LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`, `LIVEWIRE-SECURITY-LOCKED-01`, `LIVEWIRE-UPGRADE-4-01` |
 | [`php-principles`](skills/php/php-principles/SKILL.md) | `PHP-TYPING-01`, `PHP-CONSTRUCTOR-PROMOTION-01`, `PHP-ENUMS-01` |
+

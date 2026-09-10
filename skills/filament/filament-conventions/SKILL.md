@@ -7,7 +7,7 @@ description: Follow Filament conventions when building resources, forms, tables,
 
 Use this when building or changing Filament admin panel code.
 
-The version-specific schema and component-validation guidance below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`FILAMENT-SCHEMAS-01`, `FILAMENT-FORM-VALIDATION-01`, `LIVEWIRE-FORM-VALIDATION-01`, `FILAMENT-SECURITY-UPLOADS-01`).
+The version-specific schema and component-validation guidance below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`FILAMENT-SCHEMAS-01`, `FILAMENT-FORM-VALIDATION-01`, `LIVEWIRE-FORM-VALIDATION-01`, `FILAMENT-SECURITY-UPLOADS-01`, `FILAMENT-UPGRADE-5-01`).
 
 ## Detect the version first
 
@@ -15,13 +15,14 @@ The version-specific schema and component-validation guidance below cites first-
 composer show filament/filament | grep versions
 ```
 
-v3 and v4 have different APIs — check before writing or copying code:
+v3, v4, and v5 have different APIs — check before writing or copying code:
 
 - v4 represents schemas with `Filament\Schemas\Schema`, including form, infolist, layout, and action components.
-- The v4 upgrade guide records moved layout-component namespaces and changed component factory signatures; run its upgrade tooling and review every reported change before copying older snippets.
-- Plugins are version-specific; a v3 plugin will not install on v4 (see `filament-plugin-first`).
+- Filament 5 builds on this schema architecture, requires Livewire 4 and PHP 8.3+, and formalizes custom form integration with `Filament\Schemas\Contracts\HasSchemas` and `Filament\Schemas\Concerns\InteractsWithSchemas` (`FILAMENT-UPGRADE-5-01`).
+- The v4 and v5 upgrade guides record moved layout-component namespaces and changed component factory signatures; run official upgrade tooling and review every reported change before copying older snippets.
+- Plugins are version-specific; a v3 or v4 plugin will not install on v5 without compatibility updates (see `filament-plugin-first`).
 
-Match the project's installed major version. Never mix v3 and v4 snippets.
+Match the project's installed major version. Never mix v3, v4, or v5 snippets.
 
 ## Resource Structure
 
@@ -36,7 +37,7 @@ Match the project's installed major version. Never mix v3 and v4 snippets.
 - Extract reusable field groups into custom components or form components.
 - Validate fields with Filament schema validation methods or `rules()`; when a field rule depends on other form state, access it through the injected `$get` utility.
 - In Livewire components, use `#[Validate]` for simple property rules; for cross-field validation, define rules in the component's `rules()` method or a Livewire form object and call `validate()`.
-- In custom Filament forms, retrieve submitted data through `$this->form->getState()` so Filament validates and transforms the schema state before it is used.
+- In custom Filament forms (v4/v5), implement `HasSchemas` and use `InteractsWithSchemas` (legacy Filament 3 used `HasForms` and `InteractsWithForms`). Retrieve submitted data through `$this->form->getState()` so Filament validates and transforms the schema state before it is used.
 - Reserve Form Requests for conventional Laravel controller endpoints; do not use them to validate Filament or Livewire component forms.
 - When embedding Filament schemas with file upload fields in custom Livewire components, always include the `Filament\Schemas\Concerns\RestrictsFileUploadsToSchemaComponents` trait to restrict Livewire upload endpoints (`_startUpload`, `_finishUpload`) strictly to schema components, preventing attackers from targeting arbitrary public component properties (tampered targets return HTTP 403; `FILAMENT-SECURITY-UPLOADS-01`).
 - Keep form sections and tabs focused; group related fields.

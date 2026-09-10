@@ -144,6 +144,21 @@
         "primary_reason": "never_rely_on_manual_cleanup_instead_of_transactions_or_refresh"
       },
       "category": "safety"
+    },
+    {
+      "id": "pest-5-architectural-and-functional-conventions",
+      "split": "held_out",
+      "prompt": "A team upgrading to Pest 5 wants to assert that domain models are not directly queried in controllers and that all test files use functional expect() assertions rather than raw PHPUnit TestCase classes. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "class ControllerTest extends TestCase",
+        "$this->assertTrue("
+      ],
+      "expected_outcome": {
+        "decision": "apply_convention",
+        "chosen_pattern": "use_pest_5_architectural_and_expect_syntax",
+        "primary_reason": "leverage_pest_5_functional_expect_and_arch_testing_conventions"
+      },
+      "category": "should_use"
     }
   ]
 }

@@ -19,6 +19,7 @@ CONTRACT_RULES = {
     "refresh database default": r"Use `RefreshDatabase` by default for feature tests",
     "fake external services": r"Never let a test hit real infrastructure: no live HTTP calls",
     "http fake stub": r"Use `Http::fake\(\[...\]\)` to stub outbound HTTP calls",
+    "pest 5 version conventions": r"Pest 3, 4, and 5 provide distinct features and syntax expectations",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}

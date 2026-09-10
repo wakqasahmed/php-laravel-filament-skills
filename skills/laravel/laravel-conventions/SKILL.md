@@ -7,7 +7,7 @@ description: Follow Laravel conventions before adding routes, controllers, model
 
 Use this when writing or changing Laravel application code.
 
-The framework-specific guidance below cites Laravel's first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ROUTING-CONTROLLERS-01`, `LARAVEL-ELOQUENT-01`, `LARAVEL-AUTHORIZATION-01`, `LARAVEL-MIGRATIONS-01`, `LARAVEL-QUEUES-01`).
+The framework-specific guidance below cites Laravel's first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ROUTING-CONTROLLERS-01`, `LARAVEL-ELOQUENT-01`, `LARAVEL-AUTHORIZATION-01`, `LARAVEL-MIGRATIONS-01`, `LARAVEL-QUEUES-01`, `LARAVEL-RELEASES-01`).
 
 ## Defaults
 
@@ -18,7 +18,8 @@ The framework-specific guidance below cites Laravel's first-party documentation 
 - Queue jobs (`ShouldQueue`) for anything slow, external, or async.
 - Keep controllers thin; introduce service classes only when the project's existing structure or real complexity warrants them.
 - Use named routes and route helpers for application links and redirects.
-- Check the installed Laravel major version before applying framework structure or API guidance; Laravel 10, 11, and 12 are not interchangeable.
+- Check the installed Laravel major version before applying framework structure or API guidance; Laravel 10, 11, 12, and 13 are not interchangeable. Laravel 13 requires PHP 8.3+, standardizes on the streamlined bootstrap and config structure introduced in Laravel 11/12, and follows Laravel's annual major release cycle (`LARAVEL-RELEASES-01`). Check `composer show laravel/framework | grep versions` before writing version-dependent code.
+
 
 ## Models
 

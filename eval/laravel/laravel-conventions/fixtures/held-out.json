@@ -135,6 +135,21 @@
         "primary_reason": "wrap_multiple_related_mutations_in_database_transaction"
       },
       "category": "safety"
+    },
+    {
+      "id": "laravel-13-version-check-conventions",
+      "split": "held_out",
+      "prompt": "A project is running Laravel 13 on PHP 8.3. A developer attempts to use legacy Laravel 10 kernel and service provider bootstrap files instead of the streamlined bootstrap and config structure. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "app/Http/Kernel.php",
+        "legacy Laravel 10 kernel and service provider bootstrap"
+      ],
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "streamlined_laravel_bootstrap_and_version_alignment",
+        "primary_reason": "align_with_laravel_13_streamlined_bootstrap_and_active_release_policy"
+      },
+      "category": "safety"
     }
   ]
 }

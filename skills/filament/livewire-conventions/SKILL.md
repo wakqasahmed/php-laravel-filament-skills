@@ -5,7 +5,7 @@ description: Reason about Livewire component lifecycle, state, and performance w
 
 # Livewire Conventions
 
-The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`, `LIVEWIRE-SECURITY-LOCKED-01`).
+The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`, `LIVEWIRE-SECURITY-LOCKED-01`, `LIVEWIRE-UPGRADE-4-01`).
 
 Filament's resources, forms, tables, and widgets are Livewire components under the hood. Most
 Filament work stays inside the declarative schema/table API and never needs this skill. Reach
@@ -114,10 +114,12 @@ Livewire context:
   `FilamentAsset::register()`) rather than raw `@livewireStyles`/manual asset tags, so the assets
   load correctly within the panel's layout and are versioned/cached consistently with the rest of
   the panel.
-- Custom components should extend/implement the same conventions Filament's own components use
-  (`HasForms`, `InteractsWithForms`, etc.) when they need to embed a Filament schema, rather than
-  reimplementing form state handling — mixing raw Livewire property binding with a Filament schema
-  in the same component is a common source of the "properties won't sync" pitfall above.
+- In current Filament (v4/v5), custom components embedding a Filament schema must implement
+  `Filament\Schemas\Contracts\HasSchemas` and use `Filament\Schemas\Concerns\InteractsWithSchemas`
+  (Filament 3 legacy used `HasForms` and `InteractsWithForms`). Filament 5 requires Livewire 4
+  (`LIVEWIRE-UPGRADE-4-01`). Never mix raw Livewire property binding with a Filament schema in the
+  same component without delegating to schema state handling — this is a common source of the
+  "properties won't sync" pitfall above.
 - When embedding Filament schemas with file uploads (`FileUpload` components) in custom Livewire
   components using `InteractsWithSchemas` (or `InteractsWithForms`), Livewire exposes upload
   endpoints (`_startUpload`, `_finishUpload`) that could otherwise target arbitrary public component
@@ -136,9 +138,10 @@ Livewire rehydrates component state from client-side snapshots on every request.
 
 ## Verification
 
-- Confirm the installed Livewire major version (`composer show livewire/livewire`) before relying
-  on version-specific lifecycle hook names or attribute syntax — check the project's own
-  `vendor/livewire/livewire` source or changelog if behavior seems off, since hook names and
+- Confirm the installed Livewire major version (`composer show livewire/livewire | grep versions`)
+  before relying on version-specific lifecycle hook names or attribute syntax — check the project's
+  own dependencies; Livewire 3 and Livewire 4 are not interchangeable, and Filament 5 requires Livewire 4.
+  Check `vendor/livewire/livewire` source or changelog if behavior seems off, since hook names and
   some binding modifiers have changed across major versions.
 - For custom Livewire components embedding schema file uploads, write a feature test verifying that
   tampered `_startUpload` or `_finishUpload` requests targeting a non-schema property return HTTP 403

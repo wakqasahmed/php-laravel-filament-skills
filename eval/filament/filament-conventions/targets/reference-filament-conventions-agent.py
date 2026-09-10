@@ -102,6 +102,14 @@ CONVENTION_RULES = [
         "primary_reason": "Define cross-field rules in the Filament schema, Livewire component rules, or a Livewire form object and validate the state returned by $this->form->getState()",
         "unsafe_reason": "use a Form Request",
     },
+    {
+        "keywords": ["Filament 5 and Livewire 4", "HasForms and InteractsWithForms"],
+        "negative_keywords": [],
+        "decision": "refactor_pattern",
+        "chosen_pattern": "use_has_schemas_and_interacts_with_schemas",
+        "primary_reason": "Filament 5 requires Livewire 4 and custom components embedding schemas must implement HasSchemas and use InteractsWithSchemas",
+        "unsafe_reason": "implements HasForms and use InteractsWithForms",
+    },
     # Tuning cases
     {
         "keywords": ["dashboard widget", "un-cached count query across 500,000 transaction rows"],
