@@ -1,4 +1,7 @@
 {
   "images": ["python:3.12-alpine@sha256:aa679aa4eed6eb56c1dc6ad3f1b98b7d2d788fd961596779d188fdedad97fb38"],
-  "targets": [{"path":"eval/filament/filament-plugin-first/targets/reference-filament-plugin-first-agent.py","sha256":"af3495a18c92ab939ad1c46f40015ed5129f32f18451f945daf8e98c3910b0e6"}]
+  "targets": [
+    {"path": "eval/filament/filament-plugin-first/targets/model-filament-plugin-first-agent.py", "sha256": "c8cdbc3b86ad40039bb2b4d0f670d1ae8bbd3ec1aaef8cfec70a3392a37209aa"},
+    {"path": "eval/filament/filament-plugin-first/targets/reference-filament-plugin-first-agent.py", "sha256": "041b469404e08a5754b609612bd16e65a331b13e3727aafd42c32735ff2f2f02"}
+  ]
 }

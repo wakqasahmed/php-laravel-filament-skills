@@ -68,6 +68,8 @@ def outcome_for(prompt: str, enabled: bool) -> dict:
 def main() -> int:
     request = json.loads(sys.stdin.read())
     outcome = outcome_for(request["prompt"], "skill_path" in request)
+    outcome["model"] = request.get("model", "reference")
+    outcome["is_canned"] = True
     Path(request["outcome_path"]).write_text(json.dumps(outcome))
     print(json.dumps(outcome))
     return 0
