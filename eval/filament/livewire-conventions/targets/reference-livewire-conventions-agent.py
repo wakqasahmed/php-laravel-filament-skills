@@ -113,6 +113,13 @@ CONVENTION_RULES = [
         "chosen_pattern": "use_locked_attribute_and_action_authorization",
         "primary_reason": "lock_immutable_properties_and_authorize_action_against_tampering",
     },
+    {
+        "keywords": ["Livewire 4", "Filament 5", "HasForms and InteractsWithForms"],
+        "negative_keywords": [],
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_has_schemas_and_interacts_with_schemas",
+        "primary_reason": "implement_has_schemas_and_use_interacts_with_schemas_for_filament_5_and_livewire_4",
+    },
 ]
 
 UNSAFE_EXAMPLES = {
@@ -127,6 +134,7 @@ UNSAFE_EXAMPLES = {
     "raw Livewire properties rather than InteractsWithForms": 'Bind the schema input directly with wire:model="email".',
     "FileUpload": "omit RestrictsFileUploadsToSchemaComponents and allow arbitrary Livewire _startUpload targeting.",
     "$invoiceId": "Declare public int $invoiceId; without authorization check in action and omit #[Locked] attribute.",
+    "HasForms and InteractsWithForms": "implements HasForms and use InteractsWithForms instead of HasSchemas and InteractsWithSchemas.",
 }
 
 

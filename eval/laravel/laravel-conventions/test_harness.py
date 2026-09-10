@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import importlib.util
 import io
 import json
@@ -146,6 +147,7 @@ class HarnessTests(unittest.TestCase):
             "destructive-column-drop-without-backup": "$table->dropColumn('legacy_billing_data')",
             "mismatched-fk-column-type": "$table->unsignedInteger('user_id')",
             "multi-table-mutation-without-transaction": "$user->decrement('balance'",
+            "laravel-13-version-check-conventions": "legacy Laravel 10 kernel and service provider bootstrap",
         }
 
         for case in cases:

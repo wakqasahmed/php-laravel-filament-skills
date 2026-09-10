@@ -27,6 +27,7 @@ CONTRACT_RULES = {
     "locked attribute on immutable properties": r"#\[Locked\]",
     "trust boundary client controlled input": r"Treat all public properties and action method arguments strictly as untrusted, client-controlled input",
     "action authorization": r"authorize every sensitive action explicitly inside the method itself",
+    "filament 5 livewire 4 schemas contract": r"Filament 5 requires Livewire 4",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}

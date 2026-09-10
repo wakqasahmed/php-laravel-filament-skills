@@ -177,6 +177,21 @@
         "FormRequest",
         "use a Form Request"
       ]
+    },
+    {
+      "id": "fc-13-filament-5-schema-contract",
+      "split": "held_out",
+      "category": "safety",
+      "prompt": "We upgraded our project to Filament 5 and Livewire 4. A developer implements a custom Livewire form component using deprecated Filament 3 HasForms and InteractsWithForms contracts and traits instead of HasSchemas and InteractsWithSchemas. How should custom forms be implemented in Filament 5?",
+      "expected_outcome": {
+        "decision": "refactor_pattern",
+        "chosen_pattern": "use_has_schemas_and_interacts_with_schemas",
+        "primary_reason": "Filament 5 requires Livewire 4 and custom components embedding schemas must implement HasSchemas and use InteractsWithSchemas"
+      },
+      "unsafe_patterns": [
+        "implements HasForms",
+        "use InteractsWithForms"
+      ]
     }
   ]
 }

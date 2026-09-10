@@ -24,6 +24,7 @@ CONTRACT_RULES = {
     "eager load relationships": r"Prevent N\+1 queries on relationship columns",
     "custom action classes": r"Implement custom actions as action classes, not inline closures",
     "centralize tenant scope": r"Centralize tenant scope in the panel provider or middleware",
+    "filament 5 schema contract": r"Filament 5 builds on this schema architecture, requires Livewire 4",
 }
 FORBIDDEN_RULES = {
     "form requests for cross-field component validation": r"use Form Requests? for complex cross-field validation",

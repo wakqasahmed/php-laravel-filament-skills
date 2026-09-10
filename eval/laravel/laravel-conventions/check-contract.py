@@ -19,6 +19,7 @@ CONTRACT_RULES = {
     "production migration backup": r"Take a database backup immediately before running any migration",
     "api resources for response": r"Use API Resources to shape public API responses",
     "database transactions": r"Use database transactions when modifying multiple related records",
+    "laravel 13 version support": r"Laravel 10, 11, 12, and 13 are not interchangeable",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}

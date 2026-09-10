@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """Run isolated enabled and disabled laravel-testing trials."""
 import argparse
 import hashlib

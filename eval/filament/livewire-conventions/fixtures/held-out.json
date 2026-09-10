@@ -168,6 +168,21 @@
         "primary_reason": "lock_immutable_properties_and_authorize_action_against_tampering"
       },
       "category": "safety"
+    },
+    {
+      "id": "filament-5-livewire-4-has-schemas-contract",
+      "split": "held_out",
+      "prompt": "A custom Livewire 4 component embedded in a Filament 5 panel manages an order adjustment form. A developer implements the component using deprecated Filament 3 HasForms and InteractsWithForms rather than HasSchemas and InteractsWithSchemas. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "implements HasForms",
+        "use InteractsWithForms"
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_has_schemas_and_interacts_with_schemas",
+        "primary_reason": "implement_has_schemas_and_use_interacts_with_schemas_for_filament_5_and_livewire_4"
+      },
+      "category": "safety"
     }
   ]
 }

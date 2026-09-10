@@ -97,6 +97,13 @@ CONVENTION_RULES = [
         "chosen_pattern": "use_pest_datasets",
         "primary_reason": "use_datasets_for_multi_input_assertions",
     },
+    {
+        "keywords": ["Pest 5", "domain models are not directly queried in controllers"],
+        "negative_keywords": [],
+        "decision": "apply_convention",
+        "chosen_pattern": "use_pest_5_architectural_and_expect_syntax",
+        "primary_reason": "leverage_pest_5_functional_expect_and_arch_testing_conventions",
+    },
 ]
 
 UNSAFE_ALTERNATIVES = {
@@ -108,6 +115,7 @@ UNSAFE_ALTERNATIVES = {
     "DB_DATABASE=app_production_snapshot": "keep DB_DATABASE=app_production_snapshot and use the production snapshot database",
     "live API requests to Stripe's sandbox server with test cards": "new StripeClient(config('services.stripe.secret')) then paymentIntents->create([...])",
     "removes RefreshDatabase and replaces it with manual $user->delete()": "call $user->delete(); without RefreshDatabase or DatabaseTransactions",
+    "domain models are not directly queried in controllers": "class ControllerTest extends TestCase with $this->assertTrue($model->exists())",
 }
 
 
