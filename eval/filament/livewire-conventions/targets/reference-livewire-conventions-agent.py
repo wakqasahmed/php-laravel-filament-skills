@@ -106,6 +106,13 @@ CONVENTION_RULES = [
         "chosen_pattern": "use_restricts_file_uploads_to_schema_components",
         "primary_reason": "restrict_file_uploads_to_schema_components_to_prevent_arbitrary_property_targeting",
     },
+    {
+        "keywords": ["$invoiceId", "updateInvoice", "#[Locked]"],
+        "negative_keywords": [],
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_locked_attribute_and_action_authorization",
+        "primary_reason": "lock_immutable_properties_and_authorize_action_against_tampering",
+    },
 ]
 
 UNSAFE_EXAMPLES = {
@@ -119,6 +126,7 @@ UNSAFE_EXAMPLES = {
     "passes orderId to a child Livewire modal component in mount()": 'Render <livewire:order-modal :order-id="$orderId" /> without a changing key.',
     "raw Livewire properties rather than InteractsWithForms": 'Bind the schema input directly with wire:model="email".',
     "FileUpload": "omit RestrictsFileUploadsToSchemaComponents and allow arbitrary Livewire _startUpload targeting.",
+    "$invoiceId": "Declare public int $invoiceId; without authorization check in action and omit #[Locked] attribute.",
 }
 
 

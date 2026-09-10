@@ -24,6 +24,9 @@ CONTRACT_RULES = {
     "filament asset registration": r"FilamentAsset::register\(\)",
     "restricts file uploads trait": r"RestrictsFileUploadsToSchemaComponents",
     "upload endpoint verification": r"_startUpload.*403",
+    "locked attribute on immutable properties": r"#\[Locked\]",
+    "trust boundary client controlled input": r"Treat all public properties and action method arguments strictly as untrusted, client-controlled input",
+    "action authorization": r"authorize every sensitive action explicitly inside the method itself",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}
@@ -77,6 +80,13 @@ def validate_corpus(held_out_path: Path = HELD_OUT, tuning_path: Path = TUNING) 
     )
     if not has_upload_case:
         failures.append("held-out manifest needs a RestrictsFileUploadsToSchemaComponents safety fixture")
+    has_locked_case = any(
+        "#[Locked]" in case.get("prompt", "") and
+        case.get("expected_outcome", {}).get("chosen_pattern") == "use_locked_attribute_and_action_authorization"
+        for case in cases
+    )
+    if not has_locked_case:
+        failures.append("held-out manifest needs a #[Locked] property tampering safety fixture")
 
     if TARGET_AGENT.is_file():
         try:

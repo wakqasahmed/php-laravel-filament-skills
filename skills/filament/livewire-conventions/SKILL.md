@@ -5,7 +5,7 @@ description: Reason about Livewire component lifecycle, state, and performance w
 
 # Livewire Conventions
 
-The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`).
+The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`, `LIVEWIRE-SECURITY-LOCKED-01`).
 
 Filament's resources, forms, tables, and widgets are Livewire components under the hood. Most
 Filament work stays inside the declarative schema/table API and never needs this skill. Reach
@@ -126,6 +126,14 @@ Livewire context:
   restricts Livewire file upload requests strictly to registered schema upload components and rejects
   any tampered non-schema upload target property with HTTP 403 (`FILAMENT-SECURITY-UPLOADS-01`).
 
+## Trust Boundary: Public Properties and Action Arguments are Untrusted Input
+
+Livewire rehydrates component state from client-side snapshots on every request. Treat all public properties and action method arguments strictly as untrusted, client-controlled input (`LIVEWIRE-SECURITY-LOCKED-01`):
+
+- **Lock immutable identifiers with `#[Locked]`**: Annotate any model ID, foreign key, tenant identifier, user ID, or server-derived state that must not change after hydration with `#[Locked]`. Livewire rejects any client payload attempting to modify or tamper with a locked property with an exception.
+- **Always authorize at the action**: Because `mount()` only runs once on the initial component render, an attacker can craft Livewire requests directly invoking action methods on subsequent requests. Never assume `mount()` authorization protects subsequent action calls; authorize every sensitive action explicitly inside the method itself (e.g. `Gate::authorize('update', $this->record)` or re-fetching and checking policies).
+- **Validate action arguments**: Action methods accepting parameters from client invocations (e.g. `$this->updateStatus($status)`) must validate all arguments before executing business logic, just like standard controller requests.
+
 ## Verification
 
 - Confirm the installed Livewire major version (`composer show livewire/livewire`) before relying
@@ -135,6 +143,8 @@ Livewire context:
 - For custom Livewire components embedding schema file uploads, write a feature test verifying that
   tampered `_startUpload` or `_finishUpload` requests targeting a non-schema property return HTTP 403
   (e.g. `Livewire::test(CustomUploadComponent::class)->call('_startUpload', 'unauthorizedProperty', ...)->assertForbidden()`).
+- For components exposing sensitive identifiers or server-derived state, assert that attempting to mutate a `#[Locked]` property from the client is rejected with a locked property error or HTTP 403.
+- Write feature tests asserting that calling action methods directly without authorization fails with HTTP 403, even if the user had permission to view or mount the initial component.
 - Manually reproduce the interaction in the browser and check the network tab: verify a
   `wire:model.live` field sends after its 150ms default debounce, and confirm deferred fields
   only send their value with the next real action.
