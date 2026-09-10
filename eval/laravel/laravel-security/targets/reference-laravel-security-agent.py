@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 """Deterministic reference target for the isolated laravel-security outcome evaluation."""
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
 
 
 CONVENTION_RULES = [
+    {
+        "keywords": ["composer audit --locked", "GHSA-"],
+        "negative_keywords": [],
+        "decision": "refactor_vulnerability",
+        "chosen_pattern": "remediate_dependency_advisory_before_merge",
+        "primary_reason": "green_tests_do_not_override_known_vulnerability_advisories",
+        "unsafe_pattern": "merging because test suites pass",
+    },
     {
         "keywords": ["$user->update($request->all())", "is_admin"],
         "negative_keywords": [],
