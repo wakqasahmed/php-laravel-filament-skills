@@ -60,7 +60,7 @@ Changes merged to this repository are automatically synchronized to [wakqasahmed
 
 ## Outcome-eval harness status
 
-No skill in this repo has an outcome-based eval yet. Six open issues track building the deterministic + gated model-harness layers used elsewhere in this portfolio: [#26](https://github.com/wakqasahmed/php-laravel-filament-skills/issues/26)–[#31](https://github.com/wakqasahmed/php-laravel-filament-skills/issues/31).
+All 7 skills in this repository have fully functional outcome-based evaluation harnesses, complete with offline PR-CI contract layers (`run-eval.sh --dry-run`), isolated sandboxed execution environments (`run_harness.py`), genuine model adapters (`targets/model-*-agent.py`) communicating with standard HTTP model provider APIs with invocation logging, and deterministic test doubles (`targets/reference-*-agent.py`) admitted in `sterile-profile.json` with rejection gates for mismatched models or canned results.
 
 ### Fund the real harness runs
 

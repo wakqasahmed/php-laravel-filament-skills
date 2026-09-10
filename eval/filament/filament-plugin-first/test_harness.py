@@ -184,6 +184,36 @@ class HarnessTests(unittest.TestCase):
             failures = contract.validate_corpus(held_out, tuning)
         self.assertTrue(any("held-out prompt appears" in failure for failure in failures))
 
+    def test_validate_record_rejects_mismatched_model(self):
+        harness = load_module("harness_validate", "run_harness.py")
+        record = {
+            "response": '{"decision": "install"}',
+            "artifact": {"decision": "install", "model": "other-model"},
+        }
+        with self.assertRaises(SystemExit) as ctx:
+            harness.validate_record(record, "requested-model")
+        self.assertIn("adapter ignored requested model", str(ctx.exception))
+
+    def test_validate_record_rejects_canned_result(self):
+        harness = load_module("harness_validate_canned", "run_harness.py")
+        record = {
+            "response": '{"decision": "install"}',
+            "artifact": {"decision": "install", "model": "requested-model", "is_canned": True},
+        }
+        with self.assertRaises(SystemExit) as ctx:
+            harness.validate_record(record, "requested-model")
+        self.assertIn("adapter returned a canned skill-path-dependent result", str(ctx.exception))
+
+    def test_profile_admits_model_and_reference_targets(self):
+        harness = load_module("harness_profile", "run_harness.py")
+        profile = json.loads(harness.PROFILE.read_text())
+        image = profile["images"][0]
+        for target_entry in profile["targets"]:
+            target_path = harness.ROOT / target_entry["path"]
+            self.assertTrue(target_path.is_file())
+            harness.validate_profile(harness.PROFILE, image, target_path)
+
 
 if __name__ == "__main__":
     unittest.main()
+

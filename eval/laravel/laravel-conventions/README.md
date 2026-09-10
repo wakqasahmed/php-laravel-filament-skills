@@ -31,3 +31,10 @@ are kept for 90 days by the manual workflow.
 
 Held-out fixtures are split 5 should-use cases against 5 should-not-use / near-miss / safety cases.
 Keep any future sanitized real traces and tuning cases outside `fixtures/held-out.json`.
+
+## Target agents and test doubles
+
+- **Model agent (`targets/model-laravel-conventions-agent.py`):** Genuine evaluation adapter that executes model calls against configured model provider endpoints (OpenRouter, OpenAI, Anthropic, or local/test endpoints). Logs invocations when `HARNESS_LOG_INVOCATIONS=1`, honours `--model`, and writes structured decisions into `outcome.json`.
+- **Reference agent (`targets/reference-laravel-conventions-agent.py`):** Deterministic test double used for offline verification and CI smoke checks. Explicitly marked with `"is_canned": True`.
+- **Admittance & rejection gates:** Both agents are admitted in `sterile-profile.json` with verified SHA-256 digests. The harness rejects canned results or model mismatches during genuine model evaluation runs.
+

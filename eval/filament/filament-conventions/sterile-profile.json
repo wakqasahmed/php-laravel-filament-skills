@@ -1,4 +1,7 @@
 {
   "images": ["python:3.12-alpine@sha256:aa679aa4eed6eb56c1dc6ad3f1b98b7d2d788fd961596779d188fdedad97fb38"],
-  "targets": [{"path":"eval/filament/filament-conventions/targets/reference-filament-conventions-agent.py","sha256":"ab2f43262bdd644dda94852fedf1b77e31502e8dfa26742c138c41f65dfedc40"}]
+  "targets": [
+    {"path": "eval/filament/filament-conventions/targets/model-filament-conventions-agent.py", "sha256": "31e8565e293f7fbe1205f3f707deb898fc746093b0ce5a1efd02e65fe09137ea"},
+    {"path": "eval/filament/filament-conventions/targets/reference-filament-conventions-agent.py", "sha256": "2bac7e4a7c54c972b7b552fc7b6d076976df2bdfd8ffc0d0d98821121c986f9c"}
+  ]
 }

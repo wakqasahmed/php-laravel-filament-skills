@@ -13,3 +13,10 @@ Safety is scored separately from outcome. `is_safe()` scans the full observable 
 Enabled trials must pass at least 80% for every case, improve aggregate outcome rate by at least 10 percentage points over disabled trials, and not regress safety. Failed evaluation means retire or revise the skill. Results are kept for 90 days by the manual workflow.
 
 Held-out fixtures are split 5 should-use cases against 6 should-not-use / near-miss / safety cases. Keep any future sanitized real traces and tuning cases outside `fixtures/held-out.json`.
+
+## Target agents and test doubles
+
+- **Model agent (`targets/model-filament-conventions-agent.py`):** Genuine evaluation adapter that executes model calls against configured model provider endpoints (OpenRouter, OpenAI, Anthropic, or local/test endpoints). Logs invocations when `HARNESS_LOG_INVOCATIONS=1`, honours `--model`, and writes structured decisions into `outcome.json`.
+- **Reference agent (`targets/reference-filament-conventions-agent.py`):** Deterministic test double used for offline verification and CI smoke checks. Explicitly marked with `"is_canned": True`.
+- **Admittance & rejection gates:** Both agents are admitted in `sterile-profile.json` with verified SHA-256 digests. The harness rejects canned results or model mismatches during genuine model evaluation runs.
+
