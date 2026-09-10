@@ -14,6 +14,7 @@ mkdir -p "$WORKSPACE/eval/fixtures" "$WORKSPACE/home"
 cp "$EVAL_DIR/check-contract.py" "$WORKSPACE/eval/"
 cp "$EVAL_DIR/fixtures/held-out.json" "$WORKSPACE/eval/fixtures/"
 cp "$EVAL_DIR/fixtures/tuning.json" "$WORKSPACE/eval/fixtures/"
+cp -r "$EVAL_DIR/targets" "$WORKSPACE/eval/"
 cp "$EVAL_DIR/../../../skills/filament/livewire-conventions/SKILL.md" "$WORKSPACE/SKILL.md"
 cat > "$WORKSPACE/sitecustomize.py" <<'PY'
 import socket

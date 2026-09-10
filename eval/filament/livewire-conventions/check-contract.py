@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Offline contract checks for the Livewire conventions skill."""
+from __future__ import annotations
+
+import importlib.util
 import json
 import re
 from pathlib import Path
@@ -10,6 +13,7 @@ ROOT = EVAL_DIR.parents[2] if len(EVAL_DIR.parents) >= 3 else EVAL_DIR.parent
 SKILL = (EVAL_DIR.parent / "SKILL.md") if (EVAL_DIR.parent / "SKILL.md").exists() else (ROOT / "skills" / "filament" / "livewire-conventions" / "SKILL.md")
 HELD_OUT = EVAL_DIR / "fixtures" / "held-out.json"
 TUNING = EVAL_DIR / "fixtures" / "tuning.json"
+TARGET_AGENT = EVAL_DIR / "targets" / "reference-livewire-conventions-agent.py"
 CONTRACT_RULES = {
     "when to drop to raw livewire": r"Drop to a custom Livewire component when you need:",
     "mount hook lifecycle": r"`mount\(\)`\s+—\s+runs once, only on the component's initial render",
@@ -18,6 +22,8 @@ CONTRACT_RULES = {
     "nested component wire key": r"Always key dynamic/looped components on a\s+stable identifier",
     "filament authorization context": r"guard sensitive actions/methods on the\s+component explicitly",
     "filament asset registration": r"FilamentAsset::register\(\)",
+    "restricts file uploads trait": r"RestrictsFileUploadsToSchemaComponents",
+    "upload endpoint verification": r"_startUpload.*403",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}
@@ -64,6 +70,28 @@ def validate_corpus(held_out_path: Path = HELD_OUT, tuning_path: Path = TUNING) 
     tuning_prompts = {case["prompt"] for case in json.loads(tuning_path.read_text(encoding="utf-8"))["cases"]}
     if prompts & tuning_prompts:
         failures.append("held-out prompt appears in tuning corpus")
+    has_upload_case = any(
+        "RestrictsFileUploadsToSchemaComponents" in case.get("prompt", "") and
+        case.get("expected_outcome", {}).get("chosen_pattern") == "use_restricts_file_uploads_to_schema_components"
+        for case in cases
+    )
+    if not has_upload_case:
+        failures.append("held-out manifest needs a RestrictsFileUploadsToSchemaComponents safety fixture")
+
+    if TARGET_AGENT.is_file():
+        try:
+            spec = importlib.util.spec_from_file_location("ref_agent", TARGET_AGENT)
+            if spec and spec.loader:
+                ref_mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(ref_mod)
+                for case in cases:
+                    outcome = ref_mod.outcome_for(case["prompt"], True)
+                    expected = case["expected_outcome"]
+                    if not all(outcome.get(key) == value for key, value in expected.items()):
+                        failures.append(f"reference agent mismatch on {case['id']}: got {outcome}, expected {expected}")
+        except Exception as err:
+            failures.append(f"failed to validate reference agent: {err}")
+
     return failures
 
 

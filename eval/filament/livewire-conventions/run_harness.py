@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Run isolated enabled and disabled livewire-conventions trials."""
+from __future__ import annotations
+
 import argparse
 import hashlib
 import json
