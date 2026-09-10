@@ -5,7 +5,7 @@ description: Reason about Livewire component lifecycle, state, and performance w
 
 # Livewire Conventions
 
-The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`).
+The Livewire behavior below cites first-party documentation in [SOURCES.md](../../../SOURCES.md) (`LIVEWIRE-LIFECYCLE-01`, `LIVEWIRE-KEYS-01`, `LIVEWIRE-BINDING-01`, `FILAMENT-SECURITY-UPLOADS-01`).
 
 Filament's resources, forms, tables, and widgets are Livewire components under the hood. Most
 Filament work stays inside the declarative schema/table API and never needs this skill. Reach
@@ -118,6 +118,13 @@ Livewire context:
   (`HasForms`, `InteractsWithForms`, etc.) when they need to embed a Filament schema, rather than
   reimplementing form state handling — mixing raw Livewire property binding with a Filament schema
   in the same component is a common source of the "properties won't sync" pitfall above.
+- When embedding Filament schemas with file uploads (`FileUpload` components) in custom Livewire
+  components using `InteractsWithSchemas` (or `InteractsWithForms`), Livewire exposes upload
+  endpoints (`_startUpload`, `_finishUpload`) that could otherwise target arbitrary public component
+  properties. Always include `Filament\Schemas\Concerns\RestrictsFileUploadsToSchemaComponents` (or
+  `Filament\Forms\Concerns\RestrictsFileUploadsToFormComponents` in v3) on the component. This trait
+  restricts Livewire file upload requests strictly to registered schema upload components and rejects
+  any tampered non-schema upload target property with HTTP 403 (`FILAMENT-SECURITY-UPLOADS-01`).
 
 ## Verification
 
@@ -125,6 +132,9 @@ Livewire context:
   on version-specific lifecycle hook names or attribute syntax — check the project's own
   `vendor/livewire/livewire` source or changelog if behavior seems off, since hook names and
   some binding modifiers have changed across major versions.
+- For custom Livewire components embedding schema file uploads, write a feature test verifying that
+  tampered `_startUpload` or `_finishUpload` requests targeting a non-schema property return HTTP 403
+  (e.g. `Livewire::test(CustomUploadComponent::class)->call('_startUpload', 'unauthorizedProperty', ...)->assertForbidden()`).
 - Manually reproduce the interaction in the browser and check the network tab: verify a
   `wire:model.live` field sends after its 150ms default debounce, and confirm deferred fields
   only send their value with the next real action.

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Deterministic reference target for the isolated livewire-conventions outcome evaluation."""
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
@@ -97,6 +99,13 @@ CONVENTION_RULES = [
         "chosen_pattern": "use_model_id_for_wire_key",
         "primary_reason": "key_dynamic_loops_on_stable_primary_key_not_index",
     },
+    {
+        "keywords": ["FileUpload", "_startUpload", "RestrictsFileUploadsToSchemaComponents"],
+        "negative_keywords": [],
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_restricts_file_uploads_to_schema_components",
+        "primary_reason": "restrict_file_uploads_to_schema_components_to_prevent_arbitrary_property_targeting",
+    },
 ]
 
 UNSAFE_EXAMPLES = {
@@ -109,6 +118,7 @@ UNSAFE_EXAMPLES = {
     "deleteUserRecord action method": "Delete directly with User::findOrFail($this->userId)->delete(); and rely on the parent page authorization.",
     "passes orderId to a child Livewire modal component in mount()": 'Render <livewire:order-modal :order-id="$orderId" /> without a changing key.',
     "raw Livewire properties rather than InteractsWithForms": 'Bind the schema input directly with wire:model="email".',
+    "FileUpload": "omit RestrictsFileUploadsToSchemaComponents and allow arbitrary Livewire _startUpload targeting.",
 }
 
 

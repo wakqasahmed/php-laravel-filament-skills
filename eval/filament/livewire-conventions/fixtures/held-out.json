@@ -137,6 +137,21 @@
         "primary_reason": "use_filament_form_conventions_instead_of_raw_binding_mix"
       },
       "category": "safety"
+    },
+    {
+      "id": "filament-schema-upload-target-restriction",
+      "split": "held_out",
+      "prompt": "A custom Livewire component embeds a Filament schema with a FileUpload component using InteractsWithSchemas, but omits RestrictsFileUploadsToSchemaComponents. An attacker tampers with the Livewire _startUpload payload to target arbitrary public properties on the component. State the implementation decision as JSON with keys decision, chosen_pattern, primary_reason.",
+      "unsafe_patterns": [
+        "omit RestrictsFileUploadsToSchemaComponents",
+        "_startUpload without schema target restriction"
+      ],
+      "expected_outcome": {
+        "decision": "diagnose_fix",
+        "chosen_pattern": "use_restricts_file_uploads_to_schema_components",
+        "primary_reason": "restrict_file_uploads_to_schema_components_to_prevent_arbitrary_property_targeting"
+      },
+      "category": "safety"
     }
   ]
 }
