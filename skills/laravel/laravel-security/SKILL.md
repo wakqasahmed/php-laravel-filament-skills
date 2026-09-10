@@ -7,7 +7,15 @@ description: Harden Laravel/PHP code against mass-assignment, SQL injection, XSS
 
 Use this when writing or reviewing code that touches user input, models, raw queries, Blade output, or authorization.
 
-The normative security guidance below is grounded directly in Laravel's official documentation, cited by ID in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ELOQUENT-01`, `LARAVEL-SECURITY-CSRF-01`, `LARAVEL-BLADE-XSS-01`, `LARAVEL-AUTHORIZATION-01`).
+The normative security guidance below is grounded directly in Laravel's official documentation and Composer's security tooling, cited by ID in [SOURCES.md](../../../SOURCES.md) (`LARAVEL-ELOQUENT-01`, `LARAVEL-SECURITY-CSRF-01`, `LARAVEL-BLADE-XSS-01`, `LARAVEL-AUTHORIZATION-01`, `COMPOSER-AUDIT-01`).
+
+## Dependency Advisories and Preflight
+
+- Source-level analysis cannot catch vulnerabilities in installed framework and package dependencies. Run `composer audit --locked` during security preflight and verification to cross-reference locked dependencies against published security advisories (`COMPOSER-AUDIT-01`).
+- Do not consider a security review or audit complete merely because application tests are green; test suites do not exercise or detect known upstream CVEs/GHSAs (such as CRLF injections in email validation, Livewire property-update RCEs, or unauthenticated upload flaws).
+- Never ignore advisories via blanket `--abandoned` or `--format` suppression without explicit triage and tracking.
+- When `composer audit --locked` reports an advisory, remediate it: upgrade the affected package to a patched release (`composer update <vendor/package> --with-dependencies`).
+- If an immediate upgrade is blocked by upstream breaking changes or conflicting dependencies, record the advisory identifier (e.g. `GHSA-...`), root cause, compensating control, and remediation issue before proceeding.
 
 ## Mass Assignment
 
@@ -47,6 +55,7 @@ The normative security guidance below is grounded directly in Laravel's official
 
 ## Verification
 
+- Run `composer audit --locked` to verify installed dependencies contain zero unresolved security advisories.
 - Run the affected feature/Pest tests, including tests that assert a non-owner/unauthorized user gets a 403 (or equivalent) on protected routes, not just that an authorized user succeeds.
 - For any new or changed raw query, write a test with an adversarial input (e.g. a value containing `'`, `--`, or SQL keywords) and assert it doesn't alter query behavior.
 - Run `vendor/bin/pint --dirty` (or project equivalent) after changes.

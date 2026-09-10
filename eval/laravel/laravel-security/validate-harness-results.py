@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Validate observable laravel-security outcomes."""
+from __future__ import annotations
+
 import argparse
 import json
 from collections import defaultdict

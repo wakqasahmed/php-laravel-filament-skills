@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 """Offline contract checks for the Laravel security hardening skill."""
+from __future__ import annotations
+
+import importlib.util
 import json
 import re
 from pathlib import Path
@@ -10,6 +13,7 @@ ROOT = EVAL_DIR.parents[2] if len(EVAL_DIR.parents) >= 3 else EVAL_DIR.parent
 SKILL = (EVAL_DIR.parent / "SKILL.md") if (EVAL_DIR.parent / "SKILL.md").exists() else (ROOT / "skills" / "laravel" / "laravel-security" / "SKILL.md")
 HELD_OUT = EVAL_DIR / "fixtures" / "held-out.json"
 TUNING = EVAL_DIR / "fixtures" / "tuning.json"
+TARGET_AGENT = EVAL_DIR / "targets" / "reference-laravel-security-agent.py"
 CONTRACT_RULES = {
     "mass assignment form request validated": r"Never pass `\$request->all\(\)` into `fill\(\)`/`create\(\)`/`update\(\)`; pass `\$request->validated\(\)`",
     "prefer fillable allowlist": r"Prefer `\$fillable` \(allowlist\) over `\$guarded` for any model reachable from user input",
@@ -19,6 +23,9 @@ CONTRACT_RULES = {
     "raw blade unescaped warning": r"`\{!! \$value !!\}` prints raw, unescaped HTML\. Only use it for content the application itself controls",
     "webhook signature verification on csrf exclusion": r"A CSRF exclusion is only safe if the route verifies the request some other way\. For webhooks, that means signature verification",
     "explicit policy authorization for idor": r"Every controller action that reads or mutates a specific record must have an explicit authorization check tied to that record",
+    "composer audit preflight and verification": r"Run `composer audit --locked` during security preflight and verification",
+    "remediate reported advisories": r"When `composer audit --locked` reports an advisory, remediate it",
+    "green tests do not override advisories": r"Do not consider.*complete merely because application tests are green",
 }
 REQUIRED_FIELDS = {"id", "split", "prompt", "expected_outcome", "unsafe_patterns", "category"}
 OUTCOME_FIELDS = {"decision", "chosen_pattern", "primary_reason"}
@@ -64,9 +71,30 @@ def validate_corpus(held_out_path: Path = HELD_OUT, tuning_path: Path = TUNING) 
         failures.append("held-out manifest needs at least five should-not-use/near-miss/safety cases")
     if not any(case["expected_outcome"].get("decision") == "hold_for_clarification" for case in cases):
         failures.append("held-out manifest needs at least one refusal/hold case")
+    has_advisory_case = any(
+        "composer audit" in case.get("prompt", "") and
+        case.get("expected_outcome", {}).get("chosen_pattern") == "remediate_dependency_advisory_before_merge"
+        for case in cases
+    )
+    if not has_advisory_case:
+        failures.append("held-out manifest needs a composer audit advisory remediation fixture")
     tuning_prompts = {case["prompt"] for case in json.loads(tuning_path.read_text(encoding="utf-8"))["cases"]}
     if prompts & tuning_prompts:
         failures.append("held-out prompt appears in tuning corpus")
+
+    if TARGET_AGENT.is_file():
+        try:
+            spec = importlib.util.spec_from_file_location("ref_agent", TARGET_AGENT)
+            if spec and spec.loader:
+                ref_mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(ref_mod)
+                for case in cases:
+                    outcome = ref_mod.outcome_for(case["prompt"], True)
+                    if outcome != case["expected_outcome"]:
+                        failures.append(f"reference agent mismatch on {case['id']}: got {outcome}, expected {case['expected_outcome']}")
+        except Exception as err:
+            failures.append(f"failed to validate reference agent: {err}")
+
     return failures
 
 
